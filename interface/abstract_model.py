@@ -7,7 +7,9 @@ import pytorch_lightning as pl
 from util.metric_util import easy_metric
 from util.plot_util import easy_plot
 from pytorch_lightning import seed_everything
+
 seed_everything(2022)
+
 
 class AbsModel(pl.LightningModule):
     '''
@@ -60,15 +62,16 @@ class AbsModel(pl.LightningModule):
         reals, predicts = [], []
         for ite in outputs:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
-        easy_plot(reals=reals, predicts=predicts, title="train result")
+        # easy_plot(reals=reals, predicts=predicts, title="train result")
 
     def on_predict_epoch_end(self, outputs):
         reals, predicts = [], []
         for ite in outputs[0]:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
         _, (evs, mae, mse, r2) = easy_metric(reals, predicts)
+        #self.log('predict_loss', mse)
         print((evs, mae, mse, r2))
-        easy_plot(reals=reals, predicts=predicts, title="predict result")
+        # easy_plot(reals=reals, predicts=predicts, title="predict result")
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
