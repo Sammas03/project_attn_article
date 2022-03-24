@@ -1,5 +1,4 @@
 *lightning_logs/
 .idea
 
-/data/
 ray_results
