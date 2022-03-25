@@ -71,7 +71,7 @@ class AbsModel(pl.LightningModule):
         _, (evs, mae, mse, r2) = easy_metric(reals, predicts)
         #self.log('predict_loss', mse)
         print((evs, mae, mse, r2))
-        # easy_plot(reals=reals, predicts=predicts, title="predict result")
+        easy_plot(reals=reals, predicts=predicts, title="predict result")
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
