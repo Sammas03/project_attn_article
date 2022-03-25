@@ -3,7 +3,7 @@ from ray import tune
 
 p1 = {
     # 编解码器中的公共参数
-
+    "common.history_seq_len":24,
     "common.block_num": 6,  # 长周期使用的天数
     "common.block_len": 4,  # 长时序使用的序列长度
     # "common.short_time": 24,  # 短时序使用的序列长
@@ -28,7 +28,6 @@ p1 = {
     "weather.num_layers": 2,
 
     # 运行时的一些参数
-    "running.device": torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
     "running.lr": 1e-4,
     "running.batch_size": 8,
     "running.num_epoch": 1,
@@ -52,6 +51,6 @@ p2['temporal_decoder.hidden_size'] = tune.randint(64, 256)
 
 # 服务器进行参数搜索使用
 p3 = p2.copy()
-p3["running.num_epoch"] = 600
+p3["running.max_epoch"] = 600
 
 parameter = p3

@@ -161,12 +161,12 @@ class TemproalDecoder(nn.Module):
 
 #
 # class WeatherEncoder(nn.Module):
-#     def __init__(self, config):
+#     def __init__(self, common_config):
 #         super(WeatherEncoder, self).__init__()
-#         self.out_size = config['weather.out_size']
-#         self.hidden_size = config['weather.hidden_size']
-#         self.input_size = config['weather.input_size']
-#         self.layers = config['weather.num_layers']
+#         self.out_size = common_config['weather.out_size']
+#         self.hidden_size = common_config['weather.hidden_size']
+#         self.input_size = common_config['weather.input_size']
+#         self.layers = common_config['weather.num_layers']
 #         self.gru = nn.GRU(input_size=self.input_size,
 #                           hidden_size=self.hidden_size,
 #                           num_layers=self.layers,

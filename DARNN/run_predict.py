@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # data
     dataloader = MutilSeqDataModule(sc_table,'power',history_seq_len=config['seq_len'],batch_size=config['batch_size'])
-    # dataloader = OneSeqDataModule(processed_data, history_seq_len=24, batch_size=config['running.batch_size'])
+    # dataloader = OneSeqDataModule(processed_data, history_seq_len=24, batch_size=common_config['running.batch_size'])
 
     # training
     trainer = pl.Trainer(
