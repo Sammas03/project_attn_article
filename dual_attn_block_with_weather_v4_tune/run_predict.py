@@ -17,6 +17,10 @@ from common_dataloader.mutilple_loader import MutilSeqDataModule
 from dual_attn_block_with_weather_v4_tune.model import MainModel
 from dual_attn_block_with_weather_v4_tune.config import parameter
 
+from pytorch_lightning import seed_everything
+
+seed_everything(2022, workers=True)
+
 
 def trial_name_string(trial):
     return str(trial)

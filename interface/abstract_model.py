@@ -6,9 +6,9 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from util.metric_util import easy_metric
 from util.plot_util import easy_plot
-from pytorch_lightning import seed_everything
-
-seed_everything(2022)
+# from pytorch_lightning import seed_everything
+#
+# seed_everything(2022)
 
 
 class AbsModel(pl.LightningModule):
