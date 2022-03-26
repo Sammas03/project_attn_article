@@ -18,47 +18,20 @@ from pytorch_lightning import seed_everything
 seed_everything(2022, workers=True)
 
 
-
-from common_config.common_config import parents_config
+from model import GruModel
 from common_dataloader.mutilple_loader import MutilSeqDataModule
-from dual_attn_block_with_weather_v4_tune.model import MainModel
-from dual_attn_block_with_weather_v4_tune.config import parameter
+from config import parameter
+from common_tune.tune_config import trial_name_string,trial_dirname_creator
+from util import *
 
 
-
-
-
-
-
-
-
-'''
-#################################################
-#           ray tune中实验保存使用                 #
-#################################################
-'''
-def trial_name_string(trial):
-    return str(trial)
-
-
-def trial_dirname_creator(trail):
-    return str(trail)
-
-
-
-
-
-'''
-#################################################
-#      两个辅助函数：进行数据准备和预测               #
-#################################################
-'''
 
 
 def prepare_daloader():
     path = r'../data/Apt2_2015_hour_weather_bfill.xlsx'
     col_list = ['power', 'temperature', 'humidity', 'dewPoint']
     table = easy_read_data(path).iloc[:3240, :][col_list]
+    parameter['gru.input_size'] = table.shape[1]
     sc_table, sc_list = easy_mutil_transformer(table, [])
     # data
     dataloader = MutilSeqDataModule(sc_table, 'power',
@@ -68,7 +41,8 @@ def prepare_daloader():
 
 
 def best_trails_predict(checkpoint, config, dataloader):
-    model = MainModel(config)
+
+    model = GruModel(config)
     # training
     trainer = pl.Trainer(
         gpus=parents_config['gpu'],
@@ -89,7 +63,7 @@ def best_trails_predict(checkpoint, config, dataloader):
 
 
 def lightning_run(config, dataloader, checkpoint_dir=None):
-    model = MainModel(config)
+    model = GruModel(config)
     # training
     trainer = pl.Trainer(
         gpus=parents_config['gpu'],
@@ -153,7 +127,7 @@ def tune_train(dataloader):
                         trial_name_creator=trial_name_string,
                         trial_dirname_creator=trial_dirname_creator,
                         local_dir='./ray_results',
-                        name="model_with_weather_v4",
+                        name="gru_with_weather_tune",
                         )
 
     print("Best hyperparameters found were: ", analysis.best_config)
