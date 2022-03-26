@@ -29,7 +29,7 @@ p1 = {
 p2 = p1.copy()
 p2['gru.hidden_num'] = tune.randint(32, 256)
 p2['gru.num_layers'] = tune.choice([1,2,3,4,5])
-p2['running.batch_size']=tune.choice(4,6,8)
+p2['running.batch_size']=tune.choice([4,6,8])
 
 # 服务器进行参数搜索使用
 p3 = p2.copy()
