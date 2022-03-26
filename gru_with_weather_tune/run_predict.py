@@ -115,13 +115,13 @@ def tune_train(dataloader):
                                                     dataloader=dataloader
                                                     )
 
-    resources_per_trial = {"cpu": 1, "gpu": 0.15}
+    resources_per_trial = {"cpu": 1, "gpu": 0}
     analysis = tune.run(train_fn_with_parameters,
                         resources_per_trial=resources_per_trial,
                         metric="v_loss",
                         mode="min",
                         config=parameter,
-                        num_samples=500,
+                        num_samples=1,
                         # scheduler=scheduler,
                         progress_reporter=reporter,
                         trial_name_creator=trial_name_string,

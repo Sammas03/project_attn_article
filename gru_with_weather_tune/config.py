@@ -3,7 +3,7 @@ from ray import tune
 
 p1 = {
     # 编解码器中的公共参数
-    "common.history_seq_len":24, # 可调整参数
+    "common.history_seq_len": 24,  # 可调整参数
     "common.prediction_horizon": 1,  # 预测的序列长度 可调整参数
 
     "gru.hidden_num": 64,
@@ -28,8 +28,7 @@ p1 = {
 # ray.tune功能测试，只跑一个epoch
 p2 = p1.copy()
 p2['gru.hidden_num'] = tune.randint(32, 256)
-p2['gru.num_layers'] = tune.choice([1,2,3,4,5])
-p2['running.batch_size']=tune.choice([4,6,8])
+p2['gru.num_layers'] = tune.choice([1, 2, 3, 4, 5])
 
 # 服务器进行参数搜索使用
 p3 = p2.copy()
