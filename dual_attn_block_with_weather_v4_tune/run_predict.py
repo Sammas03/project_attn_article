@@ -17,26 +17,18 @@ from pytorch_lightning import seed_everything
 
 seed_everything(2022, workers=True)
 
-
-
 from common_config.common_config import parents_config
 from common_dataloader.mutilple_loader import MutilSeqDataModule
-from dual_attn_block_with_weather_v4_tune.model import MainModel
+from dual_attn_block_with_weather_v4_tune.model import MainModel as BasicModel
 from dual_attn_block_with_weather_v4_tune.config import parameter
-
-
-
-
-
-
-
-
 
 '''
 #################################################
 #           ray tune中实验保存使用                 #
 #################################################
 '''
+
+
 def trial_name_string(trial):
     return str(trial)
 
@@ -45,51 +37,27 @@ def trial_dirname_creator(trail):
     return str(trail)
 
 
-
-
-
 '''
 #################################################
-#      两个辅助函数：进行数据准备和预测               #
+#      辅助函数：进行数据准备和预测               #
 #################################################
 '''
 
 
-def prepare_daloader():
+def prepare_daloader(config=parameter, rows=3240):
     path = r'../data/Apt2_2015_hour_weather_bfill.xlsx'
     col_list = ['power', 'temperature', 'humidity', 'dewPoint']
-    table = easy_read_data(path).iloc[:3240, :][col_list]
+    table = easy_read_data(path).iloc[:rows, :][col_list]
     sc_table, sc_list = easy_mutil_transformer(table, [])
     # data
     dataloader = MutilSeqDataModule(sc_table, 'power',
-                                    history_seq_len=parameter['common.history_seq_len'],
-                                    batch_size=parameter['running.batch_size'])
+                                    history_seq_len=config['common.history_seq_len'],
+                                    batch_size=config['running.batch_size'])
     return dataloader
 
 
-def best_trails_predict(checkpoint, config, dataloader):
-    model = MainModel(config)
-    # training
-    trainer = pl.Trainer(
-        gpus=parents_config['gpu'],
-        fast_dev_run=False,  # 检查程序完整性时候执行
-        # limit_train_batches=0.3,
-        # limit_val_batches=0.3,
-        # limit_test_batches=0.5,
-        # val_check_interval=10,
-        # gradient_clip_val=0.3,  # 梯度裁剪
-        max_epochs=parameter['running.max_epoch'],
-        enable_progress_bar=False,
-        callbacks=[]
-    )
-    predict_result = trainer.predict(model, dataloader, ckpt_path=checkpoint)
-    return predict_result
-
-
-
-
 def lightning_run(config, dataloader, checkpoint_dir=None):
-    model = MainModel(config)
+    model = BasicModel(config)
     # training
     trainer = pl.Trainer(
         gpus=parents_config['gpu'],
@@ -161,16 +129,12 @@ def tune_train(dataloader):
     return analysis
 
 
-
-
-
-
-
 if __name__ == '__main__':
     dataloader = prepare_daloader()
     result = tune_train(dataloader)
     # 找到最佳配置和文件，恢复模型，进行预测
-    ckp = result.get_best_checkpoint()
+    ckp = "{}/{}".format(result.best_checkpoint, 'checkpoint')
     best_config = result.get_best_config()
-    # 重新运行模型 进行predict
-    best_predict_result = best_trails_predict(ckp, best_config, dataloader)
+    bmodel = BasicModel.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
+    trainer = pl.Trainer(gpus=parents_config['gpu'])
+    trainer.predict(bmodel, dataloader)

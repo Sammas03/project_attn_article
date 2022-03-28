@@ -42,7 +42,7 @@ class MutilSeqDataModule(AbsDataModule):
         self.train_y, self.val_y, self.test_y = self._split(y_seqs, *srate)
 
     def test_dataloader(self):
-        dataset = self._to_dataset(self.train_x[:50], self.train_y[:50])
+        dataset = self._to_dataset(self.train_x[:168], self.train_y[:168])
         return DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=True)
 
     def predict_dataloader(self):
