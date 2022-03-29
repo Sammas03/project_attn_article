@@ -17,46 +17,43 @@ from pytorch_lightning import seed_everything
 
 seed_everything(2022, workers=True)
 
-import warnings
-warnings.filterwarnings('ignore')
-
-from common_config.common_config import parents_config
+from model import LstmModel as BasicModel
 from common_dataloader.mutilple_loader import MutilSeqDataModule
-from dual_attn_block_with_weather_v4_tune.model import MainModel as BasicModel
-from dual_attn_block_with_weather_v4_tune.config import parameter
-
-'''
-#################################################
-#           ray tune中实验保存使用                 #
-#################################################
-'''
+from config import parameter
+from common_tune.tune_config import trial_name_string, trial_dirname_creator
+from util import *
 
 
-def trial_name_string(trial):
-    return str(trial)
-
-
-def trial_dirname_creator(trail):
-    return str(trail)
-
-
-'''
-#################################################
-#      辅助函数：进行数据准备和预测               #
-#################################################
-'''
-
-
-def prepare_daloader(config=parameter, rows=3240):
+def prepare_daloader():
     path = r'../data/Apt2_2015_hour_weather_bfill.xlsx'
     col_list = ['power', 'temperature', 'humidity', 'dewPoint']
-    table = easy_read_data(path).iloc[:rows, :][col_list]
+    table = easy_read_data(path).iloc[:3240, :][col_list]
+    parameter['lstm.input_size'] = table.shape[1]
     sc_table, sc_list = easy_mutil_transformer(table, [])
     # data
     dataloader = MutilSeqDataModule(sc_table, 'power',
-                                    history_seq_len=config['common.history_seq_len'],
-                                    batch_size=config['running.batch_size'])
+                                    history_seq_len=parameter['common.history_seq_len'],
+                                    batch_size=parameter['running.batch_size'])
     return dataloader
+
+
+def best_trails_predict(checkpoint, config, dataloader):
+    model = BasicModel(config)
+    # training
+    trainer = pl.Trainer(
+        gpus=parents_config['gpu'],
+        fast_dev_run=False,  # 检查程序完整性时候执行
+        # limit_train_batches=0.3,
+        # limit_val_batches=0.3,
+        # limit_test_batches=0.5,
+        # val_check_interval=10,
+        # gradient_clip_val=0.3,  # 梯度裁剪
+        max_epochs=parameter['running.max_epoch'],
+        enable_progress_bar=False,
+        callbacks=[]
+    )
+    predict_result = trainer.predict(model, dataloader, ckpt_path=checkpoint)
+    return predict_result
 
 
 def lightning_run(config, dataloader, checkpoint_dir=None):
@@ -68,7 +65,7 @@ def lightning_run(config, dataloader, checkpoint_dir=None):
         # limit_train_batches=0.3,
         # limit_val_batches=0.3,
         # limit_test_batches=0.5,
-        val_check_interval=10,
+        val_check_interval=0.5,
         # gradient_clip_val=0.3,  # 梯度裁剪
         max_epochs=parameter['running.max_epoch'],
         enable_progress_bar=False,
@@ -112,19 +109,19 @@ def tune_train(dataloader):
                                                     dataloader=dataloader
                                                     )
 
-    resources_per_trial = {"cpu": 1, "gpu": 0.15}
+    resources_per_trial = {"cpu": 1, "gpu": 0}
     analysis = tune.run(train_fn_with_parameters,
                         resources_per_trial=resources_per_trial,
                         metric="v_loss",
                         mode="min",
                         config=parameter,
-                        num_samples=500,
+                        num_samples=1,
                         # scheduler=scheduler,
                         progress_reporter=reporter,
                         trial_name_creator=trial_name_string,
                         trial_dirname_creator=trial_dirname_creator,
                         local_dir='./ray_results',
-                        name="model_with_weather_v4",
+                        name="lstm_with_weather_tune",
                         )
 
     print("Best hyperparameters found were: ", analysis.best_config)
