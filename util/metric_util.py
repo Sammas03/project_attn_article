@@ -1,5 +1,12 @@
-from sklearn.metrics import explained_variance_score, mean_absolute_error, mean_squared_error, r2_score  # 批量导入指标算法
+from sklearn.metrics import explained_variance_score,\
+    mean_absolute_error, \
+    mean_squared_error,\
+    r2_score # 批量导入指标算法
 
+
+def rmse(reals,predicts):
+    import numpy as np
+    return np.sqrt(mean_squared_error(reals,predicts))
 
 def easy_metric(reals, predicts):
     model_metrics_name = [explained_variance_score, mean_absolute_error, mean_squared_error, r2_score]
