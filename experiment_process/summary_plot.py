@@ -22,10 +22,13 @@ def summary_data_plot(result_df_dict: Dict[str, List],title='predict result'):
 
 def summary_data_plot_from_file(predict_col: Union[str, int], result_files: Dict[str, List]):
     link = {}
+    reals = None
     for key, value in result_files.items():
         df = dfr.easy_read_data(value)
         link[key] = df[predict_col] if isinstance(predict_col, str) else df.iloc[:, predict_col]
-
+        reals = df['real'].values
+    link['real'] = reals
+    summary_data_plot(link)
     # plot
 
 
