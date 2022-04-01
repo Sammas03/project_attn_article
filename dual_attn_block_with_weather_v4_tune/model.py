@@ -118,7 +118,10 @@ class TemproalDecoder(nn.Module):
                               hidden_size=self.decoder_hidden_size,
                               num_layers=1)
         # 这个版本将code拼接在fc out层进行调整
-        self.fc_out = nn.Linear(self.decoder_hidden_size+config['weather.out_size'], 1)
+        self.fc_out = nn.Sequential(
+            nn.ReLU(),
+            nn.Linear(self.decoder_hidden_size + config['weather.out_size'], 1)
+        )
         self.fc.weight.data.normal_()
         self.softmax = nn.Softmax(dim=1)
 

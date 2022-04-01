@@ -76,12 +76,17 @@ class Decoder(nn.Module):
     def __init__(self, config):
         super(Decoder, self).__init__()
         self.config = config
-        self.mlp = Mlp_Uint(config,
-                            input_size=config['aemlp.encode_size'] * 4,
-                            layer1=config['de.layer1'],
-                            layer2=config['de.layer2'],
-                            layer3=config['de.layer3'],
-                            out_size=1)
+        self.decoder = Mlp_Uint(config,
+                                input_size=config['aemlp.encode_size'] * 4,
+                                layer1=config['de.layer1'],
+                                layer2=config['de.layer2'],
+                                layer3=config['de.layer3'],
+                                out_size=config['de.layer3'])
+        self.fc_out = nn.Sequential(  # 最后一层采用relu函数剔除掉负值
+            nn.Sigmoid(),
+            nn.Linear(config['de.layer3'], 1)
+        )
 
     def forward(self, x):
-        return self.mlp(x)
+        out = self.fc_out(self.decoder(x))
+        return out

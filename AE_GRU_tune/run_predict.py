@@ -17,18 +17,22 @@ from pytorch_lightning import seed_everything
 
 seed_everything(2022, workers=True)
 
-from model import AeMlpModel as BasicModel
+
+from model import AeGruModel as BasicModel
 from common_dataloader.mutilple_loader import MutilSeqDataModule
 from config import parameter
-from common_tune.tune_config import trial_name_string, trial_dirname_creator
+from common_tune.tune_config import trial_name_string,trial_dirname_creator
 from util import *
+
+
+
 
 
 def prepare_daloader(config=parameter, rows=2160):
     path = r'../data/Apt2_2015_hour_weather_bfill.xlsx'
     col_list = ['power', 'temperature', 'humidity', 'dewPoint']
     table = easy_read_data(path).iloc[:rows, :][col_list]
-    parameter['mlp.input_size'] = config['common.history_seq_len'] * len(col_list)
+    parameter['en.input_size'] = table.shape[1]
     sc_table, sc_list = easy_mutil_transformer(table, [])
     # data
     dataloader = MutilSeqDataModule(sc_table, 'power',
@@ -42,14 +46,14 @@ def lightning_run(config, dataloader, checkpoint_dir=None):
     # training
     trainer = pl.Trainer(
         gpus=parents_config['gpu'],
-        fast_dev_run=False,  # 检查程序完整性时候执行
+        fast_dev_run=True,  # 检查程序完整性时候执行
         # limit_train_batches=0.3,
         # limit_val_batches=0.3,
         # limit_test_batches=0.5,
-        val_check_interval=0.5,
+        val_check_interval=10,
         # gradient_clip_val=0.3,  # 梯度裁剪
         max_epochs=parameter['running.max_epoch'],
-        # enable_progress_bar=False,
+        enable_progress_bar=False,
         logger=TensorBoardLogger(
             save_dir=tune.get_trial_dir(), name="", version="."),
         callbacks=[
@@ -74,11 +78,8 @@ def lightning_run(config, dataloader, checkpoint_dir=None):
     # trainer.predict(model, dataloader)
 
 
-def tune_train(dataloader, config=None):
-    #ray.init(local_mode=True)
-    if config is None:
-        config = parameter
-    # ray.init()
+def tune_train(dataloader):
+    ray.init(local_mode=True)
     scheduler = ASHAScheduler(
         max_t=10,
         grace_period=1,
@@ -98,14 +99,14 @@ def tune_train(dataloader, config=None):
                         resources_per_trial=resources_per_trial,
                         metric="v_loss",
                         mode="min",
-                        config=config,
+                        config=parameter,
                         num_samples=1,
                         # scheduler=scheduler,
                         progress_reporter=reporter,
                         trial_name_creator=trial_name_string,
                         trial_dirname_creator=trial_dirname_creator,
                         local_dir='./ray_results',
-                        name="AE_MLP_tune",
+                        name="AE_GRU_tune",
                         )
 
     print("Best hyperparameters found were: ", analysis.best_config)
@@ -113,48 +114,17 @@ def tune_train(dataloader, config=None):
     return analysis
 
 
+
+
+
+
+
 if __name__ == '__main__':
-    # import warnings
-    # warnings.filterwarnings('ignore')
-    #
-    # dataloader = prepare_daloader()
-    # result = tune_train(dataloader)
-    # # 找到最佳配置和文件，恢复模型，进行预测
-    # ckp = "{}/{}".format(result.best_checkpoint, 'checkpoint')
-    # best_config = result.get_best_config()
-    # bmodel = BasicModel.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
-    # trainer = pl.Trainer(gpus=parents_config['gpu'])
-    # trainer.predict(bmodel, dataloader)
-
-    b_config = {'common.history_seq_len': 24,
-                'common.prediction_horizon': 1,
-                'unit.layer1.hidden_num': 256,
-                'unit.layer2.hidden_num': 64,
-                'unit.layer3.hidden_num': 8,
-                'unit.output_num': 1,
-                'running.lr': 0.0001,
-                'running.batch_size': 8,
-                'running.num_epoch': 1,
-                'running.lrs_step_size': 2000,
-                'running.max_grad_norm': 0.1,
-                'running.gradient_accumulation_steps': 1,
-                'running.reg1': False,
-                'running.reg2': True,
-                'running.reg_factor1': 0.0001,
-                'running.reg_factor2': 0.0001,
-                'running.data_succession': True,
-                'aemlp.encode_size': 35,
-                'de.layer1': 1024,
-                'de.layer2': 128,
-                'de.layer3': 32,
-                'running.max_epoch': 600,
-                'mlp.input_size': 96}
     import warnings
-
     warnings.filterwarnings('ignore')
 
     dataloader = prepare_daloader()
-    result = tune_train(dataloader, b_config)
+    result = tune_train(dataloader)
     # 找到最佳配置和文件，恢复模型，进行预测
     ckp = "{}/{}".format(result.best_checkpoint, 'checkpoint')
     best_config = result.get_best_config()

@@ -32,12 +32,13 @@ if __name__ == '__main__':
         limit_train_batches=0.3,
         limit_val_batches=0.3,
         # limit_test_batches=0.5,
-        val_check_interval=10,
+        val_check_interval=27,
         # gradient_clip_val=0.3,  # 梯度裁剪
-        max_epochs=300,
+        max_epochs=500,
+        #min_epochs=50,
         callbacks=[
             ModelCheckpoint(monitor='val_loss'),  # 记录验证loss
-           # EarlyStopping(monitor="val_loss", mode="min")
+            EarlyStopping(monitor="val_loss", mode="min")
         ]
 
     )
