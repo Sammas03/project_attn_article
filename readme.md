@@ -12,3 +12,6 @@ v3 p*(c_t) + (1-p)wcode
 
 v4 cat((d_t,wcode),dim=2)
 在进入fc_out 前进行向量拼接
+
+### talent 
+添加cnn结构自动发现子序列
