@@ -1,16 +1,17 @@
-from util import easy_read_data,easy_mutil_transformer
+from util import easy_read_data, easy_mutil_transformer
 from ray.tune import ExperimentAnalysis
+import torch
 
 
 # 从文件结果中加载训练好的最佳模型
-def load_model(exp_path, model):
+def load_model(exp_path, model, device=torch.device('cpu')):
     exp = ExperimentAnalysis(
         default_metric='v_loss',
         default_mode='min',
         experiment_checkpoint_path=exp_path)
     ckp = "{}/{}".format(exp.best_checkpoint, 'checkpoint')
     best_config = exp.get_best_config()
-    bmodel = model.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
+    bmodel = model.load_from_checkpoint(checkpoint_path=ckp, config=best_config, map_location=device)
     return bmodel, exp
 
 
