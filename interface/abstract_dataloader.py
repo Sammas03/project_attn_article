@@ -71,3 +71,6 @@ class AbsDataModule(pl.LightningDataModule):
     def predict_dataloader(self):
         dataset = self._to_dataset(self.test_x, self.test_y)
         return DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=True)
+
+    def get_test_data(self):
+        return self.test_x, self.test_y
