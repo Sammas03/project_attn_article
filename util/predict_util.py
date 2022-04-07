@@ -1,4 +1,4 @@
-from util import *
+from util import easy_read_data,easy_mutil_transformer
 from ray.tune import ExperimentAnalysis
 
 
@@ -10,7 +10,7 @@ def load_model(exp_path, model):
         experiment_checkpoint_path=exp_path)
     ckp = "{}/{}".format(exp.best_checkpoint, 'checkpoint')
     best_config = exp.get_best_config()
-    bmodel = model.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
+    bmodel = model.load_from_checkpoint(checkpoint_path=ckp, config=best_config,strict=False)
     return bmodel, exp
 
 
