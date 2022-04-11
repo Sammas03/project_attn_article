@@ -10,12 +10,14 @@ from ray.tune.integration.pytorch_lightning import TuneReportCallback, \
     TuneReportCheckpointCallback
 import ray
 from ray import tune
+from ray.tune.suggest.hyperopt import HyperOptSearch
 from util import *
 
 from pytorch_lightning import seed_everything
 from common_tune.tune_config import trial_name_string, trial_dirname_creator
 
 seed_everything(2022, workers=True)
+
 
 
 def lightning_run(config,run_model, dataloader,model_callbacks:List, checkpoint_dir=None):
@@ -68,10 +70,7 @@ def tune_train(run_model,
     #                                                 model_callbacks=callbacks
     #                                                 )
 
-    analysis = tune.run(partial(lightning_run,
-                               run_model=run_model,
-                               dataloader=dataloader,
-                               model_callbacks=model_callbacks),
+    analysis = tune.run(train_fn_with_parameters,
                         resources_per_trial=resources_per_trial,
                         metric="v_loss",
                         mode="min",
@@ -81,9 +80,13 @@ def tune_train(run_model,
                         progress_reporter=reporter,
                         trial_name_creator=trial_name_string,
                         trial_dirname_creator=trial_dirname_creator,
+                        search_alg= HyperOptSearch(metric="v_loss", mode="min"),
                         local_dir=local_dir,
                         name=saving_name,
                         )
+
+    print("Best hyperparameters found were: ", analysis.best_config)
+    print("Best result", analysis.best_result_df)
     return analysis
 
 
@@ -108,6 +111,7 @@ def easy_run(data_path, run_model, config, saving_name, local_dir,num_samples=1)
                         model_callbacks=model_callbacks,
                         saving_name=saving_name,
                         resources_per_trial=resources_per_trial,
+                        local_dir=local_dir,
                         num_samples=num_samples)
     # 找到最佳配置和文件，恢复模型，进行预测
     ckp = "{}/{}".format(result.best_checkpoint, 'checkpoint')

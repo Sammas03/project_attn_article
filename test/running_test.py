@@ -1,6 +1,6 @@
 from common_config.common_config import parents_config
 
-parents_config['test'] = True
+parents_config['test'] = False
 from mlp_with_weather_tune.model import MlpModel
 from mlp_with_weather_tune.config import parameter as mlp_config
 
@@ -30,13 +30,14 @@ if __name__ == '__main__':
     #                               config=mlp_config,
     #                               num_samples=1)
 
-    # lstm_config['input_size'] = 4
-    # result, dataloader = easy_run(data_path=path,
-    #                               run_model=LstmModel,
-    #                               saving_name='LSTM_TEST',
-    #                               config=lstm_config,
-    #                               num_samples=1)
-    #
+    lstm_config['input_size'] = 4
+    result, dataloader = easy_run(data_path=path,
+                                  run_model=LstmModel,
+                                  saving_name='LSTM_TEST',
+                                  config=lstm_config,
+                                  local_dir='./ray_results',
+                                  num_samples=5)
+
     # gru_config['input_size'] = 4
     # result, dataloader = easy_run(data_path=path,
     #                               run_model=GruModel,
@@ -58,10 +59,11 @@ if __name__ == '__main__':
     #                               config=aelstm_config,
     #                               num_samples=1)
 
-    aegru_config['input_size'] = 4
-    result, dataloader = easy_run(data_path=path,
-                                  run_model=AeGruModel,
-                                  saving_name='AEGRU_TEST',
-                                  config=aegru_config,
-                                  num_samples=1)
+    # aegru_config['input_size'] = 4
+    # result, dataloader = easy_run(data_path=path,
+    #                               run_model=AeGruModel,
+    #                               saving_name='AEGRU_TEST',
+    #                               config=aegru_config,
+    #                               local_dir='./ray_results',
+    #                               num_samples=1)
 
