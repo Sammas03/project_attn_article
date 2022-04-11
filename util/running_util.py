@@ -46,6 +46,7 @@ def tune_train(run_model,
                model_callbacks,
                saving_name,
                resources_per_trial,
+               local_dir,
                num_samples=1):
     scheduler = ASHAScheduler(
         max_t=10,
@@ -80,13 +81,13 @@ def tune_train(run_model,
                         progress_reporter=reporter,
                         trial_name_creator=trial_name_string,
                         trial_dirname_creator=trial_dirname_creator,
-                        local_dir='./ray_results',
+                        local_dir=local_dir,
                         name=saving_name,
                         )
     return analysis
 
 
-def easy_run(data_path, run_model, config, saving_name, num_samples=1):
+def easy_run(data_path, run_model, config, saving_name, local_dir,num_samples=1):
     ray.init(local_mode=config['test'])
     resources_per_trial = {"cpu": 1, "gpu": 0.2} if parents_config['gpu'] else {"cpu": 1, "gpu": 0}
     dataloader = prepare_daloader(data_path,
