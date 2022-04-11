@@ -3,9 +3,6 @@
 
 import sys
 
-
-
-
 import time
 import smtplib
 from email.mime.text import MIMEText
@@ -19,15 +16,15 @@ class email_sender_calss():
         username = 'udw9109727@163.com'
         password = 'MZOQLNCGFQXJXVED'
         subject = '我发送的邮件主题'
-        str_html = 'finished'
-# 信息
+        str_html = 'finished_{}'.format(time.asctime(time.localtime()))
+        # 信息
         msg = MIMEText(str_html, 'html', 'utf-8')
         msg['Subject'] = subject
         msg['from'] = sender
         msg['to'] = receiver
         smtp = smtplib.SMTP(smtpserver)
 
-        smtp.esmtp_features["auth"] = "nonoy"
+        # smtp.esmtp_features["auth"] = "nonoy"
         (code, resp) = smtp.login(username, password)
         if 0:
             print("fail")
@@ -38,6 +35,12 @@ class email_sender_calss():
             smtp.quit()
         pass
 
+
 def finished_mail():
     app = email_sender_calss()
     app.send_email()
+
+
+if __name__ == '__main__':
+    finished_mail()
+    print(time.asctime(time.localtime()))
