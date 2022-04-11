@@ -21,7 +21,7 @@ class MlpModel(AbsModel):
         hidden_num_1 = config['mlp.layer1.hidden_num']
         hidden_num_2 = config['mlp.layer2.hidden_num']
         hidden_num_3 = config['mlp.layer3.hidden_num']
-        output_num = config['mlp.output_num']
+        output_num = config['output_size']
         self.mlp = nn.Sequential(
             nn.Linear(input_size, hidden_num_1),
             nn.ELU(),
@@ -33,7 +33,6 @@ class MlpModel(AbsModel):
         )
 
     def forward(self, x: torch.Tensor):
-        print("#########################################################33")
         # h_n of shape (num_layers * num_directions, batch, hidden_size)
         # x原始维度，batch,seq_len,input_dim ，input_dim==1
         batch, seq_len, input_dim = x.shape

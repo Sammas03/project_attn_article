@@ -16,7 +16,7 @@ class LstmModel(AbsModel):
         self.predict_y = []
         self.real_y = []
         hidden_num = config['lstm.hidden_num']
-        output_num = config['lstm.output_num']
+        output_num = config['output_size']
         num_layers = config['lstm.num_layers']
         self.hidden_size = hidden_num
         self.lr = config['running.lr']

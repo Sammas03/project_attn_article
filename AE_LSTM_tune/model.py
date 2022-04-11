@@ -64,7 +64,7 @@ class Decoder(nn.Module):
         hidden_num = config['en.hidden_num']
         input_size = config['en.hidden_num']
         layers = config['en.num_layers']
-        out_size = config['de.output_num']
+        out_size = config['output_size']
         self.decoder = LstmUnit(input_size=input_size, hidden_num=hidden_num, layers=layers)
         self.fc_out = nn.Sequential(
             nn.ReLU(),

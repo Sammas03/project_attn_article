@@ -16,7 +16,7 @@ class GruModel(AbsModel):
         self.predict_y = []
         self.real_y = []
         hidden_num = config['gru.hidden_num']
-        output_num = config['gru.output_num']
+        output_num = config['output_size']
         num_layers = config['gru.num_layers']
         self.hidden_size = hidden_num
         self.lr = config['running.lr']
