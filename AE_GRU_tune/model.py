@@ -46,7 +46,7 @@ class Encoder(nn.Module):
     def __init__(self, config):
         super(Encoder, self).__init__()
         hidden_num = config['en.hidden_num']
-        input_size = config['en.input_size']
+        input_size = config['input_size']
         layers = config['en.num_layers']
         self.encoder = GruUnit(input_size=input_size, hidden_num=hidden_num, layers=layers)
 

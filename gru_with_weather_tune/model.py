@@ -20,7 +20,7 @@ class GruModel(AbsModel):
         num_layers = config['gru.num_layers']
         self.hidden_size = hidden_num
         self.lr = config['running.lr']
-        self.input_size = config['gru.input_size']
+        self.input_size = config['input_size']
         self.layers = config['gru.num_layers']
         self.gru = nn.GRU(input_size=self.input_size,
                           hidden_size=self.hidden_size,

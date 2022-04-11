@@ -17,7 +17,7 @@ class MlpModel(AbsModel):
         self.lr = config['running.lr']  # configure_optimizers使用
         self.predict_y = []
         self.real_y = []
-        input_size = config['mlp.input_size']
+        input_size = config['input_size']
         hidden_num_1 = config['mlp.layer1.hidden_num']
         hidden_num_2 = config['mlp.layer2.hidden_num']
         hidden_num_3 = config['mlp.layer3.hidden_num']

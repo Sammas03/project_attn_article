@@ -48,7 +48,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         hidden_num = config['en.hidden_num']
         hidden_num = hidden_num
-        input_size = config['en.input_size']
+        input_size = config['input_size']
         layers = config['en.num_layers']
         self.encoder = LstmUnit(input_size=input_size, hidden_num=hidden_num, layers=layers)
 

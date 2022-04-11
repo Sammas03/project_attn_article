@@ -20,7 +20,7 @@ class LstmModel(AbsModel):
         num_layers = config['lstm.num_layers']
         self.hidden_size = hidden_num
         self.lr = config['running.lr']
-        self.input_size = config['lstm.input_size']
+        self.input_size = config['input_size']
         self.layers = config['lstm.num_layers']
         self.lstm = nn.LSTM(input_size=self.input_size,
                             hidden_size=self.hidden_size,
