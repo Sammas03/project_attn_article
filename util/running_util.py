@@ -91,7 +91,8 @@ def tune_train(run_model,
 
 
 def easy_run(data_path, run_model, config, saving_name, local_dir,num_samples=1):
-    ray.init(local_mode=config['test'])
+    if(parents_config['test']):
+        ray.init(local_mode=True)
     resources_per_trial = {"cpu": 1, "gpu": 0.2} if parents_config['gpu'] else {"cpu": 1, "gpu": 0}
     dataloader = prepare_daloader(data_path,
                                   batch_size=config['running.batch_size'],
