@@ -68,9 +68,9 @@ class AbsModel(pl.LightningModule):
         reals, predicts = [], []
         for ite in outputs[0]:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
-        (evs, mae, mse, r2,rmse) = easy_metric(reals, predicts)
+        error_ana = easy_metric(reals, predicts)
         #self.log('predict_loss', mse)
-        print((evs, mae, mse, r2))
+        print(error_ana)
         easy_plot(reals=reals, predicts=predicts, title="predict result")
 
     def configure_optimizers(self):

@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 
+plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+plt.rcParams.update({'font.size': 10})
+
 
 def easy_plot(reals, predicts, title='compared predict and real'):
     """
