@@ -27,10 +27,9 @@ class LstmModel(AbsModel):
                             num_layers=self.layers,
                             # dropout=0.5
                             )
-
         self.fc_out = nn.Sequential(
             nn.Linear(self.hidden_size, self.hidden_size),
-            nn.ReLU(),
+            nn.ELU(),
             nn.Linear(self.hidden_size, output_num)
         )
 
