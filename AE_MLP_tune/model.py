@@ -83,7 +83,7 @@ class Decoder(nn.Module):
                                 layer3=config['de.layer3'],
                                 out_size=config['de.layer3'])
         self.fc_out = nn.Sequential(  # 最后一层采用relu函数剔除掉负值
-            nn.Sigmoid(),
+            nn.RReLU(),
             nn.Linear(config['de.layer3'], config['output_size'])
         )
 

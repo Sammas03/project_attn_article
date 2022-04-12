@@ -25,12 +25,12 @@ class GruModel(AbsModel):
         self.gru = nn.GRU(input_size=self.input_size,
                           hidden_size=self.hidden_size,
                           num_layers=self.layers,
-                          #dropout=0.5
+                          # dropout=0.5
                           )
 
         self.fc_out = nn.Sequential(
             nn.Linear(self.hidden_size, self.hidden_size),
-            nn.ReLU(),
+            nn.ELU(),
             nn.Linear(self.hidden_size, output_num)
         )
 
@@ -40,11 +40,8 @@ class GruModel(AbsModel):
         seq_len, batch, input_dim = x.shape
         h = init_rnn_hidden(batch=batch, hidden_size=self.hidden_size, num_layers=self.layers)
         y, h = self.gru(x, h)
-        out = self.fc_out(h[-1,:,:])
+        out = self.fc_out(h[-1, :, :])
         return out
-
-
-
 
     def training_step(self, batch, batch_idx):
         x, y = batch
@@ -69,7 +66,6 @@ class GruModel(AbsModel):
         # self.predict_y.append(y_hat)
         # self.real_y.append(y)
         return {'real_y': y.cpu().numpy().tolist(), 'predict_y': y_hat.cpu().numpy().tolist()}
-
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
