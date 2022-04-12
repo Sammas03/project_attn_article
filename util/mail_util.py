@@ -37,7 +37,9 @@ class email_sender_calss():
 
         #引入图片
         # 指定图片为当前目录
-        fp = open('./pic/mail.jpg', 'rb')
+        import os
+        current_path = os.path.dirname(__file__)
+        fp = open(current_path+'/pic/mail.jpg', 'rb')
         msgImage = MIMEImage(fp.read())
         fp.close()
 
