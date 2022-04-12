@@ -6,7 +6,9 @@ import sys
 import time
 import smtplib
 from email.mime.text import MIMEText
-
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.header import Header
 
 class email_sender_calss():
     def send_email(self):
@@ -15,13 +17,35 @@ class email_sender_calss():
         smtpserver = 'smtp.163.com'
         username = 'udw9109727@163.com'
         password = 'MZOQLNCGFQXJXVED'
-        subject = '我发送的邮件主题'
-        str_html = 'finished_{}'.format(time.asctime(time.localtime()))
+        subject = '模型训练完成٩(๑`^´๑)۶'
+        local_time = time.asctime(time.localtime())
         # 信息
-        msg = MIMEText(str_html, 'html', 'utf-8')
-        msg['Subject'] = subject
-        msg['from'] = sender
-        msg['to'] = receiver
+        mail_msg = f"""
+        <h2>深度学习模型已经训练完成啦！</h2>
+        <p>{local_time}</p>
+        <p><img src="cid:image1"></p>
+        """
+
+        msgRoot = MIMEMultipart('related')
+        msgRoot['from'] = sender
+        msgRoot['to'] = receiver
+        msgRoot['Subject'] = subject
+        msgAlternative = MIMEMultipart('alternative')
+        msgRoot.attach(msgAlternative)
+        msgAlternative.attach(MIMEText(mail_msg, 'html', 'utf-8'))
+
+
+        #引入图片
+        # 指定图片为当前目录
+        fp = open('./pic/mail.jpg', 'rb')
+        msgImage = MIMEImage(fp.read())
+        fp.close()
+
+        # 定义图片 ID，在 HTML 文本中引用
+        msgImage.add_header('Content-ID', '<image1>')
+        msgRoot.attach(msgImage)
+
+        # 连接smtp服务端
         smtp = smtplib.SMTP(smtpserver)
 
         # smtp.esmtp_features["auth"] = "nonoy"
@@ -30,7 +54,7 @@ class email_sender_calss():
             print("fail")
         else:
             print("success")
-            result = smtp.sendmail(sender, receiver, msg.as_string())
+            result = smtp.sendmail(sender, receiver, msgRoot.as_string())
             print(result)
             smtp.quit()
         pass
