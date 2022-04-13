@@ -29,7 +29,7 @@ class LstmModel(AbsModel):
                             )
         self.fc_out = nn.Sequential(
             nn.Linear(self.hidden_size, self.hidden_size),
-            nn.ELU(),
+            nn.ReLU(),
             nn.Linear(self.hidden_size, output_num)
         )
 
