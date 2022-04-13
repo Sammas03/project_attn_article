@@ -1,6 +1,6 @@
 from ray import tune
 import warnings
-
+from util.mail_util import finished_mail
 warnings.filterwarnings('ignore')
 
 from common_config.common_config import parents_config

@@ -1,10 +1,12 @@
 from util import easy_read_data, easy_mutil_transformer
 from ray.tune import ExperimentAnalysis
 import torch
+import pytorch_lightning as pl
+from common_config.common_config import parents_config
 
 
 # 从文件结果中加载训练好的最佳模型
-def load_model(exp_path, model, device=torch.device('cpu')):
+def load_model_from_file(exp_path, model, device=torch.device('cpu')):
     exp = ExperimentAnalysis(
         default_metric='v_loss',
         default_mode='min',
@@ -27,3 +29,11 @@ def predict_result_summary(result):
     for ite in result:
         reals.extend(ite['real_y'][0][0]), predicts.extend(ite['predict_y'][0][0])
     return reals, predicts
+
+
+def easy_predict_from_result(exp_result, run_model, dataloader):
+    ckp = "{}/{}".format(exp_result.best_checkpoint, 'checkpoint')
+    best_config = exp_result.get_best_config()
+    bmodel = run_model.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
+    trainer = pl.Trainer(gpus=parents_config['gpu'])
+    trainer.predict(bmodel, dataloader)
