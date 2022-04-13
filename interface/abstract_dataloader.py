@@ -15,7 +15,7 @@ class AbsDataModule(pl.LightningDataModule):
                  history_seq_len,
                  prediction_horizon=1,
                  batch_size=1,
-                 srate=[0.7, 0.2, 0.1],
+                 srate=[0.8, 0.1, 0.1],
                  data_succession=True):
         '''
         在初始化中已经对数据集进行了切分
