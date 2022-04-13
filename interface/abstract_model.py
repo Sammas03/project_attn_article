@@ -75,8 +75,9 @@ class AbsModel(pl.LightningModule):
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[50], gamma=0.5)
-        optim_dict = {'optimizer': optimizer, 'lr_scheduler': StepLR}
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
+        #StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,200], gamma=0.5)
+        optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict
 
     def mse_loss(self, x, y):
