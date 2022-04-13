@@ -40,11 +40,11 @@ class Mlp_Uint(nn.Module):
         output_num = out_size if out_size else config['aemlp.encode_size']
         self.mlp = nn.Sequential(
             nn.Linear(input_size, hidden_num_1),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_1, hidden_num_2),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_2, hidden_num_3),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_3, output_num)
         )
 
@@ -83,7 +83,7 @@ class Decoder(nn.Module):
                                 layer3=config['de.layer3'],
                                 out_size=config['de.layer3'])
         self.fc_out = nn.Sequential(  # 最后一层采用relu函数剔除掉负值
-            nn.RReLU(),
+            nn.Tanh(),
             nn.Linear(config['de.layer3'], config['output_size'])
         )
 
