@@ -7,9 +7,6 @@ from interface.abstract_model import AbsModel
 
 
 class MlpModel(AbsModel):
-    '''
-        进行gru神经网络预测的测试
-    '''
 
     def __init__(self, config):
         super().__init__()

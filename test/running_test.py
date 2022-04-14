@@ -25,7 +25,7 @@ from AE_GRU_tune.model import AeGruModel
 from AE_GRU_tune.config import parameter as aegru_config
 from util.running_util import easy_run, signal_config_run
 from util.data_util import prepare_daloader
-
+path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
 if __name__ == '__main__':
     # path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
     #

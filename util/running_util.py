@@ -122,12 +122,12 @@ def easy_run(data_path, run_model, config, saving_name, local_dir, num_samples=1
     return result, dataloader
 
 
-def signal_config_run(config, run_model, dataloader, ckp_path='./example.ckpt'):
+def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
     model = run_model(config)
     devices = [0] if config['gpu'] else None
     # training
     trainer = pl.Trainer(
-        accelerator='auto',
+        accelerator='gpu',
         devices=devices,
         # gpus=parents_config['gpu'],
         fast_dev_run=config['test'],  # 检查程序完整性时候执行

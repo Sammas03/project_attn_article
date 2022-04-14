@@ -7,8 +7,8 @@ parents_config = {
     'output_size': 1,
 
     # 公共参数
-    "common.block_num": 6,  # 长周期使用的天数
-    "common.block_len": 4,  # 长时序使用的序列长度
+    "common.block_num": 3,  # 长周期使用的天数
+    "common.block_len": 24,  # 长时序使用的序列长度
     "common.history_seq_len": 72,  # 可调整参数
     "common.prediction_horizon": 1,  # 预测的序列长度 可调整参数
 

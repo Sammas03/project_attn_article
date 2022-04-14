@@ -62,7 +62,7 @@ class AbsDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         dataset = self._to_dataset(self.val_x, self.val_y)
-        return DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=True)
+        return DataLoader(dataset=dataset, batch_size=2, shuffle=False, drop_last=True)
 
     def test_dataloader(self):
         dataset = self._to_dataset(self.train_x[:50], self.train_y[:50])

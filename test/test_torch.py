@@ -1,4 +1,5 @@
 import torch
+import numpy as np
 # a=[
 #     [1,2,3],[4,5,6]
 # ]
@@ -6,7 +7,9 @@ import torch
 # print(t[1:,:])
 
 
-a = torch.tensor([1,2,3])
-b = torch.tensor([[2],[4]])
-c = 2*b
-print(c)
+if __name__ == '__main__':
+
+
+    a = torch.tensor(np.zeros(50))
+
+    print(a)
