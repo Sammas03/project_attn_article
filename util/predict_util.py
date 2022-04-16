@@ -37,3 +37,14 @@ def easy_predict_from_result(exp_result, run_model, dataloader):
     bmodel = run_model.load_from_checkpoint(checkpoint_path=ckp, config=best_config)
     trainer = pl.Trainer(gpus=parents_config['gpu'])
     trainer.predict(bmodel, dataloader)
+
+
+def easy_predict_from_file(exp_path,data_path,run_model):
+    from exp_util import easy_load_exp
+    exp = easy_load_exp(exp_path)
+    config = exp.get_best_config()
+    from data_util import easy_prepare_dataloader
+    dataloader = easy_prepare_dataloader(data_path,config)
+    easy_predict_from_result(exp,run_model,dataloader)
+    return exp,dataloader
+
