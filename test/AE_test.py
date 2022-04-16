@@ -33,7 +33,7 @@ path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
 if __name__ == '__main__':
     aegru_config['en.hidden_num'] = 64
     aegru_config['en.num_layers'] = 3
-    aegru_config['de.hidden_num'] = 128
+    aegru_config['de.hidden_num'] = 196
     dataloader = prepare_daloader(path,
                                   batch_size=aegru_config['running.batch_size'],
                                   history_seq_len=aegru_config['common.history_seq_len'])

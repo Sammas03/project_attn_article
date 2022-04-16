@@ -27,12 +27,19 @@ if __name__ == '__main__':
                                   batch_size=caf_config['running.batch_size'],
                                   history_seq_len=caf_config['common.history_seq_len'])
 
-
-    signal_config_run(config=cmh_config,
-                      run_model=CnnMultiHeader,
+    caf_config["running.min_epoch"]= 35
+    caf_config['running.lr'] = 0.001
+    signal_config_run(config=caf_config,
+                      run_model=CnnAttnFuse,
                       dataloader=dataloader,
-                      ckp_path="./ray_results/cmh.pt")
+                      ckp_path="./ray_results/caf.pt")
+
     #
+    # signal_config_run(config=cmh_config,
+    #                   run_model=CnnMultiHeader,
+    #                   dataloader=dataloader,
+    #                   ckp_path="./ray_results/cmh.pt")
+    # #
     # signal_config_run(config=v2_config,
     #                   run_model=v2,
     #                   dataloader=dataloader,

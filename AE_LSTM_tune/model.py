@@ -16,7 +16,7 @@ class AeLstmModel(AbsModel):
         self.lr = config['running.lr']  # configure_optimizers使用
         self.encoder = Encoder(config)
         self.decoder = Decoder(config)
-
+        self.weight_init()
     def forward(self, x):
         encoded = self.encoder(x)
         out = self.decoder(encoded)

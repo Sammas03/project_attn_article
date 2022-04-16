@@ -143,10 +143,11 @@ if __name__ == '__main__':
               'running.reg_factor2': 0.0001,
               'running.data_succession': True,
               'running.max_epoch': 500,
-              'running.min_epoch': 100,
-              'gru.hidden_num': 512,
-              'gru.num_layers': 4,
+              'running.min_epoch': 50,
+              'gru.hidden_num': 256,
+              'gru.num_layers': 5,
               'input_size': 4}
+    print(config)
     dataloader = prepare_daloader(path,
                                   batch_size=config['running.batch_size'],
                                   history_seq_len=config['common.history_seq_len'])

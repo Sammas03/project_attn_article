@@ -18,6 +18,7 @@ class CnnAttnFuse(AbsModel):
                            layer2=int(config['ar.layer1'] / 2),
                            layer3=int(config['ar.layer1'] / 4),
                            out_size=1)
+        self.weight_init()
         if (config['gpu']):
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
 

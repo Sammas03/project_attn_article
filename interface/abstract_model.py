@@ -6,6 +6,8 @@ import torch.nn.functional as F
 import pytorch_lightning as pl
 from util.metric_util import easy_metric
 from util.plot_util import easy_plot
+
+
 # from pytorch_lightning import seed_everything
 #
 # seed_everything(2022)
@@ -69,14 +71,14 @@ class AbsModel(pl.LightningModule):
         for ite in outputs[0]:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
         error_ana = easy_metric(reals, predicts)
-        #self.log('predict_loss', mse)
+        # self.log('predict_loss', mse)
         print(error_ana)
         easy_plot(reals=reals, predicts=predicts, title="predict result")
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-        #StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,200], gamma=0.5)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.85)
+        # StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,200], gamma=0.5)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict
 
@@ -84,5 +86,11 @@ class AbsModel(pl.LightningModule):
         loss = nn.MSELoss()(x, y)
 
         # params = torch.cat([p.view(-1) for name, p in self.named_parameters() if 'bias' not in name])
-        # loss += 1e-3 * torch.norm(params, 2)
+        # loss += 1e-2 *torch.linalg.norm(params,1)
         return loss
+
+    def weight_init(self):
+        # 无脑kaiming initializer 就完事了！
+        for name, param in self.named_parameters():
+            if 'weight' in name:
+                nn.init.kaiming_normal_(param, mode='fan_in')
