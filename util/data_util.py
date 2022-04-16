@@ -6,6 +6,12 @@ from common_dataloader.mutilple_loader import MutilSeqDataModule
 col_list = ['power', 'temperature', 'humidity', 'dewPoint']
 
 
+def easy_prepare_dataloader(path, config):
+    batch_size = config['running.batch_size']
+    history = config['common.history_seq_len']
+    return prepare_daloader(path, col_list, batch_size=batch_size, history_seq_len=history)
+
+
 def prepare_daloader(path: str,
                      col_list: List[str] = col_list,
                      mian_col='power',

@@ -144,7 +144,7 @@ if __name__ == '__main__':
               'running.data_succession': True,
               'running.max_epoch': 500,
               'running.min_epoch': 100,
-              'gru.hidden_num': 256,
+              'gru.hidden_num': 512,
               'gru.num_layers': 4,
               'input_size': 4}
     dataloader = prepare_daloader(path,
@@ -153,5 +153,5 @@ if __name__ == '__main__':
     signal_config_run(config=config,
                       run_model=GruModel,
                       dataloader=dataloader,
-                      ckp_path="./ray_results/gru.ckpt")
+                      ckp_path="./ray_results/gru.pt")
 

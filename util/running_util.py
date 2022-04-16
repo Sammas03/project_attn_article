@@ -127,18 +127,19 @@ def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
     devices = [0] if config['gpu'] else None
     # training
     trainer = pl.Trainer(
-        accelerator='gpu',
+        accelerator='auto',
         devices=devices,
         # gpus=parents_config['gpu'],
         fast_dev_run=config['test'],  # 检查程序完整性时候执行
         # limit_train_batches=0.3,
         # limit_val_batches=0.3,
         # limit_test_batches=0.5,
-        check_val_every_n_epoch=3,
+        check_val_every_n_epoch=2,
         # gradient_clip_val=0.3,  # 梯度裁剪
         max_epochs=config['running.max_epoch'],
         enable_progress_bar=True,
-        accumulate_grad_batches=3,  # 梯度累加获取跟大batch_size相同的效果
+        accumulate_grad_batches=4,  # 梯度累加获取跟大batch_size相同的效果
+        log_every_n_steps=10,
         callbacks=[
             EarlyStopping(monitor="val_loss", min_delta=0.0, patience=10, verbose=False, mode="min"),
            # StochasticWeightAveraging(swa_lrs=1e-2)
