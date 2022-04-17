@@ -27,8 +27,8 @@ if __name__ == '__main__':
                                   batch_size=caf_config['running.batch_size'],
                                   history_seq_len=caf_config['common.history_seq_len'])
 
-    caf_config["running.min_epoch"]= 35
-    caf_config['running.lr'] = 0.001
+    caf_config["running.min_epoch"] = 35
+    caf_config['running.lr'] = 0.0001
     signal_config_run(config=caf_config,
                       run_model=CnnAttnFuse,
                       dataloader=dataloader,
@@ -50,10 +50,10 @@ if __name__ == '__main__':
 {'r2': 0.4268868005423432, 'evs': 0.4278182686279325, 'mae': 0.04342855716293508, 'mse': 0.003639495063411808, 'rmse': 0.06032822774963481}
 
 '''
-    # signal_config_run(config=caf_config,
-    #                   run_model=CnnAttnFuse,
-    #                   dataloader=dataloader,
-    #                   ckp_path="./ray_results/caf.pt")
+# signal_config_run(config=caf_config,
+#                   run_model=CnnAttnFuse,
+#                   dataloader=dataloader,
+#                   ckp_path="./ray_results/caf.pt")
 
 '''
 {'r2': 0.13764019581266407, 'evs': 0.17741294387977435, 'mae': 0.054217892115195974, 'mse': 0.005476325188801497, 'rmse': 0.07400219718901255}
@@ -64,4 +64,3 @@ if __name__ == '__main__':
 {'r2': 0.3810066683082689, 'evs': 0.394063572333597, 'mae': 0.04518838761525861, 'mse': 0.00393085201511456, 'rmse': 0.06269650720027839}
 
 '''
-

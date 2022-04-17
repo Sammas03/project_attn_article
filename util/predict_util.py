@@ -27,7 +27,7 @@ def get_predict_data_tables(path: str, col_list, train_rate=0.9, rows=2160):
 def predict_result_summary(result):
     reals, predicts = [], []
     for ite in result:
-        reals.extend(ite['real_y'][0][0]), predicts.extend(ite['predict_y'][0][0])
+        reals.append(ite['real_y'][0][0]), predicts.append(ite['predict_y'][0][0])
     return reals, predicts
 
 

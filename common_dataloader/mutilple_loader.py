@@ -30,6 +30,8 @@ class MutilSeqDataModule(AbsDataModule):
         self.batch_size = batch_size
         self.col_size = table.shape[1]
         self.prediction_horizon = prediction_horizon
+        self.end_index = 0
+        self.section = 0
         step = prediction_horizon if data_succession else history_seq_len
         data_size,col_size = table.shape[0],table.shape[1]
         x_seqs, y_seqs = [], []

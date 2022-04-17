@@ -141,7 +141,7 @@ def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
         enable_progress_bar=True,
         accumulate_grad_batches=4,  # 梯度累加获取跟大batch_size相同的效果
         log_every_n_steps=50,
-        gradient_clip_val=0.8,
+        #gradient_clip_val=0.8,
         callbacks=[
             EarlyStopping(monitor="val_loss", min_delta=0.0, patience=5, verbose=False, mode="min"),
            # StochasticWeightAveraging(swa_lrs=1e-2)

@@ -115,11 +115,14 @@ class Decoder(nn.Module):
         self.softmax = nn.Softmax(dim=1)
         self.lstm = nn.LSTM(input_size=lstm_input_size,
                             hidden_size=self.lstm_hidden_size,
-                            num_layers=1)
+                            num_layers=1,
+                            dropout=0.5)
+
         self.fc_out = nn.Sequential(
             #nn.ReLU(),
             nn.Linear(self.lstm_hidden_size, int(self.lstm_hidden_size / 2)),
-            nn.ReLU(),
+            #nn.Dropout(p=0.5),
+            nn.Tanh(),
             nn.Linear(int(self.lstm_hidden_size / 2), 1)
             # nn.Linear(self.lstm_hidden_size, 1)
         )
