@@ -27,14 +27,14 @@ if __name__ == '__main__':
                        history_seq_len=caf_config['common.history_seq_len'])
     dataloader = mydl.prepare_daloader()
     predict_dl = mydl.prepare_predict_daloader()
-    caf_config['test']=False
+    caf_config['test']=True
     caf_config["running.min_epoch"] = 50
     caf_config['running.lr'] = 0.0001
     trainer, model, dataloader = signal_config_run(config=caf_config,
                                                    run_model=CnnAttnFuse,
                                                    dataloader=dataloader,
                                                    ckp_path="./ray_results/caf.pt")
-    diff_result = trainer.predict(model, predict_dl.train_dataloader())
+    diff_result = trainer.predict(model, predict_dl)
     from util.predict_util import predict_result_summary
 
     print(diff_result)

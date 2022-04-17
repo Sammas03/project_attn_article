@@ -78,7 +78,7 @@ class MyDataloder():
         return self._create_daloader(self.norm_table)
 
     def prepare_predict_daloader(self):  # 1阶差分数据
-        return self._create_daloader(self.predict_table, srate=[1.0, 0, 0])
+        return self._create_daloader(self.predict_table, srate=[0, 0, 1.0])
 
     def reverse_diff(self,predict_diff:List):
         import pandas as pd
