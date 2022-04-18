@@ -13,7 +13,7 @@ parents_config = {
     "common.prediction_horizon": 1,  # 预测的序列长度 可调整参数
 
     # 运行时的一些参数
-    "running.lr": 0.001,
+    "running.lr": 0.0025,
     "running.batch_size": 4,
     "running.num_epoch": 1,
     "running.max_grad_norm": 0.1,  # 梯度剪切 最大梯度
@@ -23,7 +23,7 @@ parents_config = {
     "running.reg_factor1": 1e-4,
     "running.reg_factor2": 1e-4,
     "running.data_succession": True,  # 样本数据是否连续
-    "running.max_epoch": 250,
-    "running.min_epoch": 50,
+    "running.max_epoch": 500,
+    "running.min_epoch": 75,
 
 }

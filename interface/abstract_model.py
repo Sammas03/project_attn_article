@@ -30,24 +30,20 @@ class AbsModel(pl.LightningModule):
         x, y = batch
         y_hat = self(x)
         loss = self.mse_loss(y_hat, y)
-        self.log('train_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        # self.log('train_loss', loss, on_epoch=True, prog_bar=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         loss = self.mse_loss(y_hat, y)
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        self.log('val_loss', loss, on_epoch=True, prog_bar=True, logger=True)
 
     def test_step(self, batch, batch_idx):
         x, y = batch
         y_hat = self(x)
         loss = self.mse_loss(y_hat, y)
-        self.log('test_loss', loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
-        # if self.predict_y is None : self.predict_y = []
-        # if self.real_y is None : self.real_y = []
-        # self.predict_y.append(y_hat)
-        # self.real_y.append(y)
+        self.log('test_loss', loss, on_epoch=True, prog_bar=True, logger=True)
         return {'real_y': y.cpu().numpy().tolist(), 'predict_y': y_hat.cpu().numpy().tolist()}
 
     def predict_step(self, batch, batch_idx: int):
@@ -76,9 +72,18 @@ class AbsModel(pl.LightningModule):
         easy_plot(reals=reals, predicts=predicts, title="predict result")
 
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.85)
-        # StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,200], gamma=0.5)
+        weight_p, bias_p = [], []
+        for name, p in self.named_parameters():
+            if 'bias' in name:
+                bias_p += [p]
+            else:
+                weight_p += [p]
+        optimizer = torch.optim.AdamW([
+            {'params': weight_p, 'weight_decay': 0.1},
+            {'params': bias_p, 'weight_decay': 0}
+        ], lr=self.lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.92)
+        # StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.25)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict
 
@@ -86,11 +91,12 @@ class AbsModel(pl.LightningModule):
         loss = nn.MSELoss()(x, y)
 
         # params = torch.cat([p.view(-1) for name, p in self.named_parameters() if 'bias' not in name])
-        # loss += 1e-2 *torch.linalg.norm(params,1)
+        # loss += 1e-3 * torch.linalg.norm(params, 2) / (2 * sum(1 for _ in self.named_parameters()))
         return loss
 
     def weight_init(self):
         # 无脑kaiming initializer 就完事了！
         for name, param in self.named_parameters():
             if 'weight' in name:
+                # nn.init.kaiming_uniform_(param, mode='fan_in')
                 nn.init.kaiming_normal_(param, mode='fan_in')
