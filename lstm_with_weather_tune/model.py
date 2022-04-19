@@ -17,7 +17,6 @@ class LstmModel(AbsModel):
         self.real_y = []
         hidden_num = config['lstm.hidden_num']
         output_num = config['output_size']
-        num_layers = config['lstm.num_layers']
         self.hidden_size = hidden_num
         self.lr = config['running.lr']
         self.input_size = config['input_size']
@@ -25,21 +24,23 @@ class LstmModel(AbsModel):
         self.lstm = nn.LSTM(input_size=self.input_size,
                             hidden_size=self.hidden_size,
                             num_layers=self.layers,
-                            # dropout=0.5
+                            dropout=0.5
                             )
         self.fc_out = nn.Sequential(
             nn.Linear(self.hidden_size, self.hidden_size),
+            nn.Dropout(0.5),
             nn.ReLU(),
             nn.Linear(self.hidden_size, output_num)
         )
+        self.weight_init()
 
     def forward(self, x):
         # h_n of shape (num_layers * num_directions, batch, hidden_size)
         x = x.permute(2, 0, 1)  # seq_len,batch,input_dim
         seq_len, batch, input_dim = x.shape
-        h = init_rnn_hidden(batch=batch, hidden_size=self.hidden_size, num_layers=self.layers)
-        c = init_rnn_hidden(batch=batch, hidden_size=self.hidden_size, num_layers=self.layers)
-        y, (h, c) = self.lstm(x, (h, c))
+        # h = init_rnn_hidden(batch=batch, hidden_size=self.hidden_size, num_layers=self.layers)
+        # c = init_rnn_hidden(batch=batch, hidden_size=self.hidden_size, num_layers=self.layers)
+        y, (h, c) = self.lstm(x)
         out = self.fc_out(h[-1, :, :])
         return out
 

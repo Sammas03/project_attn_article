@@ -78,13 +78,14 @@ class AbsModel(pl.LightningModule):
                 bias_p += [p]
             else:
                 weight_p += [p]
-        optimizer = torch.optim.AdamW([
-            {'params': weight_p, 'weight_decay': 0.1},
-            {'params': bias_p, 'weight_decay': 0}
-        ], lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.92)
-        # StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.25)
-        optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
+        optimizer = torch.optim.Adam(self.parameters(),lr=self.lr)
+        # optimizer = torch.optim.AdamW([
+        #     {'params': weight_p, 'weight_decay': 0.05},
+        #     {'params': bias_p, 'weight_decay': 0}
+        # ], lr=self.lr)
+        #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96,verbose=True)
+        StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
+        optim_dict = {'optimizer': optimizer, 'lr_scheduler': StepLR}
         return optim_dict
 
     def mse_loss(self, x, y):

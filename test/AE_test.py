@@ -37,7 +37,15 @@ if __name__ == '__main__':
     dataloader = prepare_daloader(path,
                                   batch_size=aegru_config['running.batch_size'],
                                   history_seq_len=aegru_config['common.history_seq_len'])
-    signal_config_run(config=aegru_config,
-                      run_model=AeGruModel,
+    # signal_config_run(config=aegru_config,
+    #                   run_model=AeGruModel,
+    #                   dataloader=dataloader,
+    #                   ckp_path=easy_add_time_suffix("./ray_results/aegru.ckpt"))
+
+    signal_config_run(config=aelstm_config,
+                      run_model=AeLstmModel,
                       dataloader=dataloader,
-                      ckp_path=easy_add_time_suffix("./ray_results/aegru.ckpt"))
+                      ckp_path=easy_add_time_suffix("./ray_results/aelstm.ckpt"))
+
+
+# 0.437 lstm  top 0.49

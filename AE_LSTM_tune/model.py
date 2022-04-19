@@ -32,7 +32,7 @@ class LstmUnit(nn.Module):
         self.gru = nn.LSTM(input_size=input_size,
                            hidden_size=hidden_num,
                            num_layers=layers,
-                           # dropout=0.5
+                           dropout=0.5
                            )
 
     def forward(self, x):

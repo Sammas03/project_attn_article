@@ -107,7 +107,8 @@ if __name__ == '__main__':
                                                    ckp_path="./ray_results/v5.pt")
     trainer.predict(model, dataloader.train_dataloader())
 '''
-
+r2: 0.46382306192701084
+r2:0.44
 {'r2': 0.37111128437251284, 'evs': 0.3981284926523857, 'mae': 0.045785905000125394, 'mse': 0.003993691609489335, 'rmse': 0.06319566131855363}
 
 '''

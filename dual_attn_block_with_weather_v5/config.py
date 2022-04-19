@@ -3,7 +3,7 @@ from ray import tune
 from common_config.common_config import parents_config
 
 p2 = parents_config.copy()
-p2["running.lr"] = 0.001
+p2["running.lr"] = 0.0001
 p2['en.hidden_size'] = 32
 p2['en.out_channels'] = 16
 p2['en.num_layers'] = 2
@@ -24,7 +24,7 @@ parameter = p2
 # 'r2': 0.4489776635442433 开启指数lr衰减 gamma =0.9
 
 # {'r2': 0.48196688448490876, 'evs': 0.48303332312149105, 'mae': 0.04217949445452987, 'mse': 0.0032897147865119276, 'rmse': 0.057356035310261184}
-
+# 'r2': 0.4826713351060532 l2 --->0.1 gamma=0.95
 '''
 p2["running.lr"]= 0.001
 p2['en.hidden_size'] = 32

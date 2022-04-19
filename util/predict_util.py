@@ -1,3 +1,5 @@
+import pandas as pd
+
 from util import easy_read_data, easy_mutil_transformer
 from ray.tune import ExperimentAnalysis
 import torch
@@ -48,3 +50,7 @@ def easy_predict_from_file(exp_path,data_path,run_model):
     easy_predict_from_result(exp,run_model,dataloader)
     return exp,dataloader
 
+
+def result_to_file(result,path):
+    reals, predicts = predict_result_summary(result)
+    pd.DataFrame({"real":reals,"predict":predicts}).to_excel(path)

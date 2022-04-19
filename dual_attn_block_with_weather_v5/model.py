@@ -145,7 +145,7 @@ class TemproalDecoder(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.batch_size = config['running.batch_size']
-        self.code_size = config['en.hidden_size'] + config['en.sup_out_channel']
+        self.code_size = config['en.hidden_size']   + config['en.sup_out_channel']
         self.block_num = config['common.block_num']
         self.block_len = config['common.block_len']
         self.hidden_size = config['de.hidden_size']
@@ -183,22 +183,42 @@ class ResFlusion(nn.Module):
         super(ResFlusion, self).__init__()
         self.main_code_size = config['en.hidden_size']
         self.code_size = config['en.hidden_size'] + config['en.sup_out_channel']
+
+        self.layer_norm = nn.LayerNorm([config['common.block_len'], self.code_size], elementwise_affine=False)
         self.res_con = nn.Sequential(
             nn.Linear(self.code_size, 2 * self.code_size),
-            nn.ReLU(),
+            nn.Sigmoid(),
             nn.Linear(2 * self.code_size, self.code_size)
         )
-        self.layer_norm = nn.LayerNorm(self.code_size, elementwise_affine=False)
 
     def forward(self, main_x, sup_x):
-        # mix = torch.cat([main_x, sup_x], dim=2)
+        mix = torch.cat([main_x, sup_x], dim=2)
+        ln_mix = self.layer_norm(mix.permute(1, 0, 2))  # ---> batch,history,hidden_size
         # F.layer_norm(mix,sup_x)
-        # res_mix = self.res_con(mix)
-        # fusion_x = mix + res_mix
-        # ln_x = self.layer_norm(fusion_x.permute(1, 0, 2))
-        # return ln_x.permute(1, 0, 2)
+        res_mix = self.res_con(ln_mix)
+        fusion_x = res_mix + ln_mix
+        return fusion_x.permute(1, 0, 2)  # --->history,batch,hidden_size
 
         # 不通过res_con
-        fusion_x = torch.cat([main_x, sup_x], dim=2)
+        # fusion_x = torch.cat([main_x, sup_x], dim=2)
         # ln_x = self.layer_norm(fusion_x.permute(1, 0, 2))
-        return fusion_x  # ln_x.permute(1, 0, 2)
+        # return fusion_x  # ln_x.permute(1, 0, 2)
+
+
+
+    def configure_optimizers(self):
+        weight_p, bias_p = [], []
+        for name, p in self.named_parameters():
+            if 'bias' in name:
+                bias_p += [p]
+            else:
+                weight_p += [p]
+        #optimizer = torch.optim.Adam(self.parameters(),lr=self.lr)
+        optimizer = torch.optim.AdamW([
+            {'params': weight_p, 'weight_decay': 0.02},
+            {'params': bias_p, 'weight_decay': 0}
+        ], lr=self.lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96,verbose=True)
+        #StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
+        optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
+        return optim_dict

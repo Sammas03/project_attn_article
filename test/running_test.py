@@ -1,6 +1,7 @@
 from ray import tune
 import warnings
 from util.mail_util import finished_mail
+
 warnings.filterwarnings('ignore')
 
 from common_config.common_config import parents_config
@@ -23,8 +24,12 @@ from AE_LSTM_tune.config import parameter as aelstm_config
 
 from AE_GRU_tune.model import AeGruModel
 from AE_GRU_tune.config import parameter as aegru_config
+
+from CNN_LSTM.model import CnnLstmModel
+from CNN_LSTM.config import parameter as cnnlstm_config
 from util.running_util import easy_run, signal_config_run
 from util.data_util import prepare_daloader
+
 path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
 if __name__ == '__main__':
     # path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
@@ -116,43 +121,35 @@ if __name__ == '__main__':
     #                   run_model=LstmModel,
     #                   dataloader=dataloader,
     #                   ckp_path="./ray_results/lstm.ckpt")
-# {'r2': 0.4710003630101709, 'evs': 0.4718347678477276, 'mae': 0.04247411757565001, 'mse': 0.0033593565271102556, 'rmse': 0.05795995623799466}
-# {'r2': 0.4480938584424785, 'evs': 0.4584191662216539, 'mae': 0.042866726027151046,
-#                        'mse': 0.0035048218738742607, 'rmse': 0.0592015360769825}
+    # {'r2': 0.4710003630101709, 'evs': 0.4718347678477276, 'mae': 0.04247411757565001, 'mse': 0.0033593565271102556, 'rmse': 0.05795995623799466}
+    # {'r2': 0.4480938584424785, 'evs': 0.4584191662216539, 'mae': 0.042866726027151046,
+    #                        'mse': 0.0035048218738742607, 'rmse': 0.0592015360769825}
     '''
     {'r2': 0.4379927049480966, 'evs': 0.4546009961083557, 'mae': 0.04307213240262994, 'mse': 0.0035689681861775843, 'rmse': 0.05974084186030177}
     
     '''
 
-    config = {'gpu': 1,
-              'test': False,
-              'output_size': 1,
-              'common.block_num': 6,
-              'common.block_len': 4,
-              'common.history_seq_len': 72,
-              'common.prediction_horizon': 1,
-              'running.lr': 0.0001,
-              'running.batch_size': 4,
-              'running.num_epoch': 1,
-              'running.lrs_step_size': 2000,
-              'running.max_grad_norm': 0.1,
-              'running.gradient_accumulation_steps': 1,
-              'running.reg1': False,
-              'running.reg2': True,
-              'running.reg_factor1': 0.0001,
-              'running.reg_factor2': 0.0001,
-              'running.data_succession': True,
-              'running.max_epoch': 500,
-              'running.min_epoch': 50,
-              'gru.hidden_num': 256,
-              'gru.num_layers': 5,
-              'input_size': 4}
-    print(config)
+    # gru_config
     dataloader = prepare_daloader(path,
-                                  batch_size=config['running.batch_size'],
-                                  history_seq_len=config['common.history_seq_len'])
-    signal_config_run(config=config,
-                      run_model=GruModel,
-                      dataloader=dataloader,
-                      ckp_path="./ray_results/gru.pt")
+                                  batch_size=gru_config['running.batch_size'],
+                                  history_seq_len=gru_config['common.history_seq_len'])
+
+    # trainer, model, dataloader = signal_config_run(config=gru_config,
+    #                                                run_model=GruModel,
+    #                                                dataloader=dataloader,
+    #                                                ckp_path="./ray_results/gru.pt")
+
+    # trainer, model, dataloader = signal_config_run(config=lstm_config,
+    #                                                run_model=LstmModel,
+    #                                                dataloader=dataloader,
+    #                                                ckp_path="./ray_results/lstm.ckpt")
+    #
+    # trainer.predict(model, dataloader.train_dataloader())
+    trainer, model, dataloader = signal_config_run(config=cnnlstm_config,
+                                                   run_model=CnnLstmModel,
+                                                   dataloader=dataloader,
+                                                   ckp_path="./ray_results/cnnlstm.ckpt")
+
+    trainer.predict(model, dataloader.train_dataloader())
+
 
