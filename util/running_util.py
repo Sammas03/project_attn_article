@@ -150,5 +150,5 @@ def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
     trainer.fit(model, dataloader)
     trainer.save_checkpoint(ckp_path)
     trainer.test(model, dataloader)
-    trainer.predict(model, dataloader)
-    return trainer, model, dataloader
+    result = trainer.predict(model, dataloader)
+    return trainer, model,dataloader

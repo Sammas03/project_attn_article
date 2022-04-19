@@ -17,7 +17,7 @@ class MainModel(AbsModel):
 
     def __init__(self, config):
         super().__init__()
-        self.lr = config['running.lr']  # configure_optimizers使用
+        self.lr = 0.001#config['running.lr']  # configure_optimizers使用
         self.main_encoder = MainEncoder(config)
         self.sup_encoder = SupEncoder(config)
         self.decoder = TemproalDecoder(config)
@@ -213,11 +213,11 @@ class ResFlusion(nn.Module):
                 bias_p += [p]
             else:
                 weight_p += [p]
-        #optimizer = torch.optim.Adam(self.parameters(),lr=self.lr)
-        optimizer = torch.optim.AdamW([
-            {'params': weight_p, 'weight_decay': 0.02},
-            {'params': bias_p, 'weight_decay': 0}
-        ], lr=self.lr)
+        optimizer = torch.optim.Adam(self.parameters(),lr=self.lr)
+        # optimizer = torch.optim.AdamW([
+        #     {'params': weight_p, 'weight_decay': 0.02},
+        #     {'params': bias_p, 'weight_decay': 0}
+        # ], lr=self.lr)
         scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96,verbose=True)
         #StepLR = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}

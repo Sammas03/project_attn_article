@@ -32,7 +32,7 @@ class LstmModel(AbsModel):
             nn.ReLU(),
             nn.Linear(self.hidden_size, output_num)
         )
-        self.weight_init()
+        # self.weight_init()
 
     def forward(self, x):
         # h_n of shape (num_layers * num_directions, batch, hidden_size)

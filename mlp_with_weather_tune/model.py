@@ -22,15 +22,17 @@ class MlpModel(AbsModel):
         output_num = config['output_size']
         self.mlp = nn.Sequential(
             nn.Linear(input_size, hidden_num_1),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_1, hidden_num_2),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_2, hidden_num_3),
-            nn.ELU(),
+            nn.Tanh(),
             nn.Linear(hidden_num_3, hidden_num_4),
-            nn.Sigmoid(),
+            nn.Tanh(),
             nn.Linear(hidden_num_4, output_num)
         )
+
+        self.weight_init()
 
     def forward(self, x: torch.Tensor):
         # h_n of shape (num_layers * num_directions, batch, hidden_size)

@@ -41,16 +41,23 @@ def easy_predict_from_result(exp_result, run_model, dataloader):
     trainer.predict(bmodel, dataloader)
 
 
-def easy_predict_from_file(exp_path,data_path,run_model):
+def easy_predict_from_file(exp_path, data_path, run_model):
     from exp_util import easy_load_exp
     exp = easy_load_exp(exp_path)
     config = exp.get_best_config()
     from data_util import easy_prepare_dataloader
-    dataloader = easy_prepare_dataloader(data_path,config)
-    easy_predict_from_result(exp,run_model,dataloader)
-    return exp,dataloader
+    dataloader = easy_prepare_dataloader(data_path, config)
+    easy_predict_from_result(exp, run_model, dataloader)
+    return exp, dataloader
 
 
-def result_to_file(result,path):
+def result_to_file(result, path):
     reals, predicts = predict_result_summary(result)
-    pd.DataFrame({"real":reals,"predict":predicts}).to_excel(path)
+    import os
+    dir_path = os.path.dirname(path)
+    if(not os.path.exists(dir_path)):os.makedirs(dir_path)
+    pd.DataFrame({"real": reals, "predict": predicts}).to_csv(path)
+    from util.metric_util import easy_metric
+    error_ana = easy_metric(reals, predicts)
+    pd.DataFrame(error_ana).to_csv(path+"error.csv")
+

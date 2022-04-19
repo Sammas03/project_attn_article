@@ -15,5 +15,5 @@ def easy_metric(reals, predicts):
     mae = mean_absolute_error(reals, predicts)
     mse = mean_squared_error(reals, predicts)
     rmse = metric_rmse(reals, predicts)
-    seq_metrics_score_dict = {"r2": r2, "evs": evs, "mae": mae, "mse": mse, "rmse": rmse}
+    seq_metrics_score_dict = {"r2": [r2], "evs": [evs], "mae": [mae], "mse": [mse], "rmse": [rmse]}
     return seq_metrics_score_dict

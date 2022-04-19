@@ -26,7 +26,7 @@ class CnnLstmModel(AbsModel):
         self.lstm = nn.LSTM(input_size=self.input_size,
                             hidden_size=self.hidden_size,
                             num_layers=self.layers,
-                            dropout=0.5
+                            # dropout=0.5
                             )
         self.fc_out = nn.Sequential(
             nn.Linear(self.hidden_size, self.hidden_size),
@@ -34,7 +34,7 @@ class CnnLstmModel(AbsModel):
             nn.ReLU(),
             nn.Linear(self.hidden_size, output_num)
         )
-        self.weight_init()
+        # self.weight_init()
 
     def forward(self, x):
         x = self.conv(x)
