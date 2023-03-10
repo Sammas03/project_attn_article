@@ -29,6 +29,7 @@ def summary_data_plot_from_file(predict_col: Union[str, int], result_files: Dict
         reals = df['real'].values
     link['real'] = reals
     summary_data_plot(link)
+    return link
     # plot
 
 
@@ -45,4 +46,3 @@ if __name__ == '__main__':
     # sns.set_palette('muted')
     curves = sins()
     summary_data_plot(curves)
-    print(1111)

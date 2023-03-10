@@ -61,3 +61,5 @@ def result_to_file(result, path):
     error_ana = easy_metric(reals, predicts)
     pd.DataFrame(error_ana).to_csv(path+"error.csv")
 
+
+

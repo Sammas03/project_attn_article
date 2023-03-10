@@ -15,3 +15,7 @@ v4 cat((d_t,wcode),dim=2)
 
 ### talent 
 添加cnn结构自动发现子序列
+
+### statistic 里面存放了子序列图的统计代码
+
+### 3090 ana-系列中存放了其余的图形代码

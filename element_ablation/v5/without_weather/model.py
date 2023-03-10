@@ -107,7 +107,8 @@ class TemproalDecoder(nn.Module):
     def __init__(self, config):
         super().__init__()
         self.batch_size = config['running.batch_size']
-        self.code_size = config['en.hidden_size'] + config['en.sup_out_channel']
+        # self.code_size = config['en.hidden_size'] + config['en.sup_out_channel']
+        self.code_size = config['en.hidden_size']
         self.block_num = config['common.block_num']
         self.block_len = config['common.block_len']
         self.hidden_size = config['de.hidden_size']
@@ -115,7 +116,7 @@ class TemproalDecoder(nn.Module):
         self.prediction_horizon = config['common.prediction_horizon']
         self.dropout = config['de.dropout']
 
-        self.fusion_con = ResFlusion(config)
+        # self.fusion_con = ResFlusion(config)
         self.lstm = nn.LSTM(input_size=self.code_size,
                             hidden_size=self.hidden_size,
                             num_layers=self.lstm_num_layers,
@@ -132,10 +133,10 @@ class TemproalDecoder(nn.Module):
     def forward(self, input_code: torch.Tensor, sup_code: torch.Tensor):
         self.batch_size = input_code.shape[1]
         # fusion_x = torch.cat([input_code, sup_code], dim=2)
-        fusion_x = self.fusion_con(input_code, sup_code)
+        # fusion_x = self.fusion_con(input_code, sup_code)
         h_t = init_rnn_hidden(self.batch_size, self.hidden_size, num_layers=self.lstm_num_layers)
         c_t = init_rnn_hidden(self.batch_size, self.hidden_size, num_layers=self.lstm_num_layers)
-        x_hat, (h_t, c_t) = self.lstm(fusion_x, (h_t, c_t))
+        x_hat, (h_t, c_t) = self.lstm(input_code, (h_t, c_t))
         out = self.fc_out(h_t[-1, :, :])
         return out
 
@@ -173,7 +174,7 @@ class MainModel(AbsModel):
 
     def __init__(self, config):
         super().__init__()
-        self.lr = 0.001  # config['running.lr']  # configure_optimizers使用
+        self.lr = 0.0005  # config['running.lr']  # configure_optimizers使用
         self.main_encoder = MainEncoder(config)
         self.sup_encoder = SupEncoder(config)
         self.decoder = TemproalDecoder(config)
@@ -226,7 +227,7 @@ class MainModel(AbsModel):
         #     {'params': weight_p, 'weight_decay': 0.05},
         #     {'params': bias_p, 'weight_decay': 0}
         # ], lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.92, verbose=True)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.96, verbose=True)
         # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict

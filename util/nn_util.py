@@ -18,6 +18,6 @@ def init_rnn_hidden(batch, hidden_size: int, num_layers: int = 1,num_dir=1, xavi
         维度(num_layers * num_directions, batch, hidden_size)
     """
     if(parents_config['gpu']):
-        torch.set_default_tensor_type(torch.cuda.FloatTensor)
+        torch.set_default_tensor_type(torch.cuda.DoubleTensor)
     tensor = torch.zeros(batch, hidden_size) if num_layers < 1 else torch.zeros(num_dir*num_layers, batch, hidden_size)
     return nn.init.xavier_normal_(tensor) if xavier else Variable(tensor)

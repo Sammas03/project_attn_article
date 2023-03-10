@@ -1,3 +1,8 @@
+'''
+子序列长度实验  这里使用了 6 12 24
+'''
+
+
 
 
 from common_config.common_config import parents_config
@@ -36,139 +41,126 @@ import warnings
 warnings.filterwarnings('ignore')
 
 """apt 14"""
-# path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt14_2015/{}_result.csv'
-
-
-# """apt 38"""
-# path = r'../data/Apt38_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt38_2015/{}_result.csv'
-
-
-"""apt 47"""
-# path = r'../data/Apt47_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt47_2015/{}_result.csv'
-
-
-# """apt 72"""
-# path = r'../data/Apt72_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt72_2015/{}_result.csv'
-
-
-"""apt 82"""
-# path = r'../data/Apt82_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt82_2015/{}_result.csv'
-
-
-"""88"""
-path = r'../data/Apt88_2015_resample_hour_with_weather.xlsx'
-result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt88_2015/{}_result.csv'
-
-
-"""114"""
-# path = r'../data/Apt114_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt114_2015/{}_result.csv'
-#
+path = r'../data/Apt14_2015_resample_hour_with_weather.xlsx'
+result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_block/Apt14_2015/{}_result.csv'
 
 """16"""
 # path = r'../data/Apt16_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt16_2015/{}_result.csv'
+# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_block/Apt16_2015/{}_result.csv'
 
 """101"""
 # path = r'../data/Apt101_2015_resample_hour_with_weather.xlsx'
-# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_result/Apt101_2015/{}_result.csv'
+# result_path = r'/home/lhd/git_wsp/project_attn/ray_results/exp_block/Apt101_2015/{}_result.csv'
 
 dataloader = prepare_daloader(path,
                               batch_size=parents_config['running.batch_size'],
                               history_seq_len=parents_config['common.history_seq_len'])
 
-
-def run_mlp():
-    model = MlpModel
-    config = mlp_config
-    trainer, model, _ = signal_config_run(config=config,
-                                          run_model=model,
-                                          dataloader=dataloader,
-                                          ckp_path="./ray_results/mlp.pt")
-    result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('MLP'))
-
-
-def run_lstm():
-    model = LstmModel
-    config = lstm_config
-    trainer, model, _ = signal_config_run(config=config,
-                                          run_model=model,
-                                          dataloader=dataloader,
-                                          ckp_path="./ray_results/LSTM.pt")
-    result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('LSTM'))
-
-
-
-def run_gru():
-    model = GruModel
-    config = gru_config
-    trainer, model, _ = signal_config_run(config=config,
-                                          run_model=model,
-                                          dataloader=dataloader,
-                                          ckp_path="./ray_results/GRU.pt")
-    result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('GRU'))
-
-
-def run_aemlp():
-    model = AeMlpModel
-    config = aemlp_config
-    trainer, model, _ = signal_config_run(config=config,
-                                          run_model=model,
-                                          dataloader=dataloader,
-                                          ckp_path="./ray_results/AEMLP.pt")
-    result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('AEMLP'))
-
-
-def run_cnn_lstm():
-    model = CnnLstmModel
-    config = cnnlstm_config
-    trainer, model, _ = signal_config_run(config=config,
-                                          run_model=model,
-                                          dataloader=dataloader,
-                                          ckp_path="./ray_results/CNNLSTM.pt")
-    result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('CNNLSTM'))
-
-
-# def run_cnn_gru():
-#     pass
-
-
-def run_main():
+def run_main_6():
     model = v5
     config = v5_config
+    config['common.block_num'] = 12
+    config['common.block_len'] = 6
     trainer, model, _ = signal_config_run(config=config,
                                           run_model=model,
                                           dataloader=dataloader,
-                                          ckp_path="./ray_results/MAIN.pt")
+                                          ckp_path="./ray_results/block/MAIN6.pt")
     result = trainer.predict(model, dataloader)
-    result_to_file(result, result_path.format('MAIN'))
+    result_to_file(result, result_path.format('MAIN6'))
+
+def run_main_9():
+    model = v5
+    config = v5_config
+    config['common.block_num'] = 8
+    config['common.block_len'] = 9
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN9.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN9'))
+
+def run_main_12():
+    model = v5
+    config = v5_config
+    config['common.block_num'] = 6
+    config['common.block_len'] = 12
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN12.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN12'))
+
+
+
+
+def run_main_18():
+    model = v5
+    config = v5_config
+    config['common.block_num'] = 4
+    config['common.block_len'] = 18
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN18.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN18'))
+
+
+
+def run_main_24():
+    model = v5
+    config = v5_config
+    # config['common.block_num'] = 4
+    # config['common.block_len'] = 18
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN24.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN24'))
+
+
+
+def run_main_36():
+    model = v5
+    config = v5_config
+    config['common.block_num'] = 2
+    config['common.block_len'] = 36
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN36.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN36'))
+
+
+
+def run_main_72():
+    model = v5
+    config = v5_config
+    config['common.block_num'] = 4
+    config['common.block_len'] = 24
+    config['common.history_seq_len'] = 96
+    trainer, model, _ = signal_config_run(config=config,
+                                          run_model=model,
+                                          dataloader=dataloader,
+                                          ckp_path="./ray_results/block/MAIN36.pt")
+    result = trainer.predict(model, dataloader)
+    result_to_file(result, result_path.format('MAIN72'))
+
 
 
 
 if __name__ == '__main__':
-    print("asdasd")
-    run_mlp()
-    # print("---hello---")
-    # run_aemlp()
-    # print("------")
-    # run_lstm()
-    # print("------")
-    # run_gru()
-    # print("------")
-    # run_cnn_lstm()
-    # print("------")
-    # run_main()
-
+    # run_main_6()
+    # run_main_9()
+    # run_main_12()
+    # run_main_18()
+    # run_main_24()
+    # run_main_36()
+    run_main_72()
 # 完成：14    all
 #      16    all  微调了 初始化 和dropout （去掉dropout gru效果最好）
 #      101   all  proposal model 加上初始化效果比较好

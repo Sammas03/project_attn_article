@@ -9,7 +9,48 @@ import pytorch_lightning as pl
 from util.nn_util import init_rnn_hidden
 from interface.abstract_model import AbsModel
 
+"""
+数据不差分输入
+"""
+class MainModel(AbsModel):
+    '''
+        进行gru神经网络预测的测试
+    '''
 
+    def __init__(self, config):
+        super().__init__()
+        self.lr = 0.001  # config['running.lr']  # configure_optimizers使用
+        self.main_encoder = MainEncoder(config)
+        self.sup_encoder = SupEncoder(config)
+        self.decoder = TemproalDecoder(config)
+        self.ar = Mlp_Uint(config,
+                           input_size=config['common.history_seq_len'],
+                           layer1=config['ar.layer1'],
+                           layer2=int(config['ar.layer1'] / 2),
+                           layer3=int(config['ar.layer1'] / 4),
+                           out_size=1)
+        # 初始化和cuda
+        self.weight_init()
+        if (config['gpu']):
+            torch.set_default_tensor_type(torch.cuda.FloatTensor)
+        self.fc = nn.Linear(2, 1)
+
+    def forward(self, x):
+        # encoded, attn = self.encoder(x)
+        # output = self.decoder(encoded, x)
+        # return output
+        # 相比较源模型 ，做出了变形将原始数据分离
+        main_seq = x[:, 0, :].unsqueeze(1)
+        #sup_seq = (x[:, 1:, -24:] - x[:, 1:, -25:-1])  # 辅助数据做一阶差分
+        sup_seq = x[:, 1:, -24:]
+        main_code, attn = self.main_encoder(main_seq)
+        sup_code = self.sup_encoder(sup_seq)
+        nonout = self.decoder(main_code, sup_code)  # main_seq
+        ar_out = self.ar(x[:, 0, :])
+        fout = self.fc(torch.cat([nonout, ar_out], dim=1))
+        # p=0.7
+        # fout = p*nonout + (1-p)* ar_out
+        return fout
 
 
 class Mlp_Uint(nn.Module):
@@ -154,65 +195,16 @@ class ResFlusion(nn.Module):
         )
 
     def forward(self, main_x, sup_x):
-        mix = torch.cat([main_x, sup_x], dim=2)
-        ln_mix = self.layer_norm(mix.permute(1, 0, 2))  # ---> batch,history,hidden_size
-        res_mix = self.res_con(ln_mix)
-        fusion_x = res_mix + ln_mix
-        return fusion_x.permute(1, 0, 2)  # --->history,batch,hidden_size
+        # mix = torch.cat([main_x, sup_x], dim=2)
+        # ln_mix = self.layer_norm(mix.permute(1, 0, 2))  # ---> batch,history,hidden_size
+        # res_mix = self.res_con(ln_mix)
+        # fusion_x = res_mix + ln_mix
+        # return fusion_x.permute(1, 0, 2)  # --->history,batch,hidden_size
 
-        # # 不通过res_con
-        # fusion_x = torch.cat([main_x, sup_x], dim=2)
-        # # ln_x = self.layer_norm(fusion_x.permute(1, 0, 2))
-        # return fusion_x  # ln_x.permute(1, 0, 2)
-
-
-class MainModel(AbsModel):
-    '''
-        进行gru神经网络预测的测试
-    '''
-
-    def __init__(self, config):
-        super().__init__()
-        self.lr = 0.001  # config['running.lr']  # configure_optimizers使用
-        self.main_encoder = MainEncoder(config)
-        self.sup_encoder = SupEncoder(config)
-        self.decoder = TemproalDecoder(config)
-        self.config = config
-        self.ar = Mlp_Uint(config,
-                           input_size=config['common.history_seq_len'],
-                           layer1=config['ar.layer1'],
-                           layer2=int(config['ar.layer1'] / 2),
-                           layer3=int(config['ar.layer1'] / 4),
-                           out_size=1)
-        # 初始化和cuda
-        self.weight_init()
-        if (config['gpu']):
-            torch.set_default_tensor_type(torch.cuda.FloatTensor)
-        self.fc = nn.Linear(2, 1)
-
-    def forward(self, x):
-        sup_len = self.config['common.block_len']
-        # encoded, attn = self.encoder(x)
-        # output = self.decoder(encoded, x)
-        # return output
-        # 相比较源模型 ，做出了变形将原始数据分离
-        main_seq = x[:, 0, :].unsqueeze(1)
-        if (sup_len != 72):
-
-            sup_seq = (x[:, 1:, -sup_len:] - x[:, 1:, -(sup_len + 1):-1])  # 辅助数据做一阶差分
-        else:
-            temp_tensor = torch.zeros(x[:, 1:, :].shape)
-            temp_tensor[:,:, 0] = x[:, 1:, 0]
-            temp_tensor[:,:,1:] = x[:, 1:, :-1]
-            sup_seq = x[:, 1:, :] - temp_tensor
-        main_code, attn = self.main_encoder(main_seq)
-        sup_code = self.sup_encoder(sup_seq)
-        nonout = self.decoder(main_code, sup_code)  # main_seq
-        ar_out = self.ar(x[:, 0, :])
-        fout = self.fc(torch.cat([nonout, ar_out], dim=1))
-        # p=0.7
-        # fout = p*nonout + (1-p)* ar_out
-        return fout
+        # 不通过res_con
+        fusion_x = torch.cat([main_x, sup_x], dim=2)
+        # ln_x = self.layer_norm(fusion_x.permute(1, 0, 2))
+        return fusion_x  # ln_x.permute(1, 0, 2)
 
     def configure_optimizers(self):
         weight_p, bias_p = [], []
@@ -222,13 +214,11 @@ class MainModel(AbsModel):
             else:
                 weight_p += [p]
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
-        # optimizer = torch.optim.AdamW([
-        #     {'params': weight_p, 'weight_decay': 0.05},
-        #     {'params': bias_p, 'weight_decay': 0}
-        # ], lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.92, verbose=True)
-        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
+        optimizer = torch.optim.AdamW([
+            {'params': weight_p, 'weight_decay': 0.05},
+            {'params': bias_p, 'weight_decay': 0}
+        ], lr=self.lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.94, verbose=True)
+        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[15,30,60,100,150], gamma=0.5)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict
-
-

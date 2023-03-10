@@ -139,9 +139,9 @@ def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
         max_epochs=config['running.max_epoch'],
         min_epochs=config['running.min_epoch'],
         enable_progress_bar=True,
-        accumulate_grad_batches=4,  # 梯度累加获取跟大batch_size相同的效果
+        accumulate_grad_batches=2,  # 梯度累加获取跟大batch_size相同的效果
         log_every_n_steps=50,
-        #gradient_clip_val=0.2,
+        # gradient_clip_val=2.5,
         callbacks=[
             EarlyStopping(monitor="val_loss", min_delta=0.0, patience=10, verbose=False, mode="min"),
             # StochasticWeightAveraging(swa_lrs=1e-2)
@@ -149,6 +149,7 @@ def signal_config_run(config, run_model, dataloader, ckp_path='./example.pt'):
     )
     trainer.fit(model, dataloader)
     trainer.save_checkpoint(ckp_path)
-    trainer.test(model, dataloader)
+    # trainer.test(model, dataloader)
+    trainer.predict(model, dataloader.train_dataloader())
     result = trainer.predict(model, dataloader)
     return trainer, model,dataloader

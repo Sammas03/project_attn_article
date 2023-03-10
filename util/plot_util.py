@@ -18,3 +18,8 @@ def easy_plot(reals, predicts, title='compared predict and real'):
     plt.title(title)  # 标题
     plt.legend()  # 自适应位置
     plt.show()
+
+
+
+for i in range(6):
+    print("{},{}".format(str(int(i/3)),str(i%3)))

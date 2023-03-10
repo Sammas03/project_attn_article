@@ -32,9 +32,9 @@ class AbsDataModule(pl.LightningDataModule):
         data_size = target.shape[0] if type(target) == pd.DataFrame else len(target)
         x_seqs, y_seqs = [], []
         for i in range(0, data_size - history_seq_len - prediction_horizon, step):
-            x = target[i:i + history_seq_len]
-            y = target[i + history_seq_len:i + history_seq_len + prediction_horizon].tolist()
-            x_seqs.append(torch.FloatTensor(x).view(1, -1)), y_seqs.append(torch.FloatTensor(y).view(1, -1))
+            x = target[i:i + history_seq_len].values
+            y = target[i + history_seq_len:i + history_seq_len + prediction_horizon].values
+            x_seqs.append(torch.DoubleTensor(x).view(1, -1)), y_seqs.append(torch.DoubleTensor(y).view(1, -1))
         self.train_x, self.val_x, self.test_x = self._split(x_seqs, *srate)
         self.train_y, self.val_y, self.test_y = self._split(y_seqs, *srate)
 
@@ -65,7 +65,7 @@ class AbsDataModule(pl.LightningDataModule):
         return DataLoader(dataset=dataset, batch_size=2, shuffle=False, drop_last=True)
 
     def test_dataloader(self):
-        dataset = self._to_dataset(self.train_x[:50], self.train_y[:50])
+        dataset = self._to_dataset(self.train_x[:168], self.train_y[:168])
         return DataLoader(dataset=dataset, batch_size=1, shuffle=False, drop_last=True)
 
     def predict_dataloader(self):

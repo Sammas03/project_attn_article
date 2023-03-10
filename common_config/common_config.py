@@ -23,7 +23,7 @@ parents_config = {
     "running.reg_factor1": 1e-4,
     "running.reg_factor2": 1e-4,
     "running.data_succession": True,  # 样本数据是否连续
-    "running.max_epoch": 500,
-    "running.min_epoch": 35,
+    "running.max_epoch": 50,
+    "running.min_epoch": 50,
 
 }

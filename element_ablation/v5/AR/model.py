@@ -173,22 +173,22 @@ class MainModel(AbsModel):
 
     def __init__(self, config):
         super().__init__()
-        self.lr = 0.001  # config['running.lr']  # configure_optimizers使用
+        self.lr = 0.0005  # config['running.lr']  # configure_optimizers使用
         self.main_encoder = MainEncoder(config)
         self.sup_encoder = SupEncoder(config)
         self.decoder = TemproalDecoder(config)
         self.config = config
-        self.ar = Mlp_Uint(config,
-                           input_size=config['common.history_seq_len'],
-                           layer1=config['ar.layer1'],
-                           layer2=int(config['ar.layer1'] / 2),
-                           layer3=int(config['ar.layer1'] / 4),
-                           out_size=1)
+        # self.ar = Mlp_Uint(config,
+        #                    input_size=config['common.history_seq_len'],
+        #                    layer1=config['ar.layer1'],
+        #                    layer2=int(config['ar.layer1'] / 2),
+        #                    layer3=int(config['ar.layer1'] / 4),
+        #                    out_size=1)
         # 初始化和cuda
         self.weight_init()
         if (config['gpu']):
             torch.set_default_tensor_type(torch.cuda.FloatTensor)
-        self.fc = nn.Linear(2, 1)
+        # self.fc = nn.Linear(2, 1)
 
     def forward(self, x):
         sup_len = self.config['common.block_len']
@@ -198,7 +198,6 @@ class MainModel(AbsModel):
         # 相比较源模型 ，做出了变形将原始数据分离
         main_seq = x[:, 0, :].unsqueeze(1)
         if (sup_len != 72):
-
             sup_seq = (x[:, 1:, -sup_len:] - x[:, 1:, -(sup_len + 1):-1])  # 辅助数据做一阶差分
         else:
             temp_tensor = torch.zeros(x[:, 1:, :].shape)
@@ -208,25 +207,26 @@ class MainModel(AbsModel):
         main_code, attn = self.main_encoder(main_seq)
         sup_code = self.sup_encoder(sup_seq)
         nonout = self.decoder(main_code, sup_code)  # main_seq
-        ar_out = self.ar(x[:, 0, :])
-        fout = self.fc(torch.cat([nonout, ar_out], dim=1))
+        # ar_out = self.ar(x[:, 0, :])
+        # fout = self.fc(torch.cat([nonout, ar_out], dim=1))
         # p=0.7
         # fout = p*nonout + (1-p)* ar_out
-        return fout
+        return nonout
 
     def configure_optimizers(self):
-        weight_p, bias_p = [], []
-        for name, p in self.named_parameters():
-            if 'bias' in name:
-                bias_p += [p]
-            else:
-                weight_p += [p]
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+        # weight_p, bias_p = [], []
+        # for name, p in self.named_parameters():
+        #     if 'bias' in name:
+        #         bias_p += [p]
+        #     else:
+        #         weight_p += [p]
+
         # optimizer = torch.optim.AdamW([
         #     {'params': weight_p, 'weight_decay': 0.05},
         #     {'params': bias_p, 'weight_decay': 0}
         # ], lr=self.lr)
-        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.92, verbose=True)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
+        scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98, verbose=True)
         # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=[25,50,100,150], gamma=0.5)
         optim_dict = {'optimizer': optimizer, 'lr_scheduler': scheduler}
         return optim_dict

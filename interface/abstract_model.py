@@ -15,7 +15,7 @@ from util.plot_util import easy_plot
 
 class AbsModel(pl.LightningModule):
     '''
-        进行gru神经网络预测的测试
+        model interface
     '''
 
     @abc.abstractmethod
@@ -57,12 +57,17 @@ class AbsModel(pl.LightningModule):
         :param outputs:
         :return:
         '''
+        print("===============拟合情况=============")
         reals, predicts = [], []
         for ite in outputs:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
-        # easy_plot(reals=reals, predicts=predicts, title="train result")
+        error_ana = easy_metric(reals, predicts)
+        easy_plot(reals=reals, predicts=predicts, title="train result")
+        print(error_ana)
+
 
     def on_predict_epoch_end(self, outputs):
+        print("===============预测=============")
         reals, predicts = [], []
         for ite in outputs[0]:
             reals.extend(ite['real_y']), predicts.extend(ite['predict_y'])
