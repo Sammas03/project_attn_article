@@ -11,7 +11,7 @@ config['test'] = False
 
 # Full context 参数
 config['full_baseline_lstm_hidden'] = 64
-config['full_baseline_lstm_layer'] = 1
+config['full_baseline_lstm_layer'] = 2
 config['full_baseline_fc_hidden'] = 32
 # time local 参数
 config['time_baseline_input'] = 7  # 固定值 7

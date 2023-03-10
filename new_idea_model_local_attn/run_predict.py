@@ -22,6 +22,7 @@ from common_dataloader.signal_dataloader import OneSeqDataModule
 from config import parameter
 from common_tune.tune_config import trial_name_string, trial_dirname_creator
 from util import *
+from util import io_util
 
 
 def prepare_daloader():
@@ -96,3 +97,4 @@ if __name__ == '__main__':
     tu = TimeUtil()
     lightning_run(config=parameter, dataloader=dataloader)
     tu.count(True)
+    io_util.io()
